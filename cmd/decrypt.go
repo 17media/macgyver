@@ -44,7 +44,7 @@ func decrypt(cmd *cobra.Command, args []string) {
 
 		// if it needs to be decrypted
 		if match[2] == Perfix {
-			decryptText, err := p.Decrypt(flag.value)
+			decryptText, err := p.Decrypt([]byte(flag.value))
 			if err != nil {
 				log.Fatal(err)
 			}

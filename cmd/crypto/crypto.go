@@ -2,8 +2,8 @@ package crypto
 
 // Crypto defines crypto operations
 type Crypto interface {
-	Encrypt(string) (string, error)
-	Decrypt(string) (string, error)
+	Encrypt([]byte) ([]byte, error)
+	Decrypt([]byte) ([]byte, error)
 }
 
 // ProviderNewFunc creates

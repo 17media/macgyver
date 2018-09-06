@@ -14,15 +14,15 @@ func newBase64() Crypto {
 	return &base64{}
 }
 
-func (im *base64) Encrypt(text string) (string, error) {
-	encoded := b.StdEncoding.EncodeToString([]byte(text))
-	return encoded, nil
+func (im *base64) Encrypt(text []byte) ([]byte, error) {
+	encoded := b.StdEncoding.EncodeToString(text)
+	return []byte(encoded), nil
 }
 
-func (im *base64) Decrypt(encryptText string) (string, error) {
-	decoded, err := b.StdEncoding.DecodeString(encryptText)
+func (im *base64) Decrypt(encryptText []byte) ([]byte, error) {
+	decoded, err := b.StdEncoding.DecodeString(string(encryptText))
 	if err != nil {
-		return "", err
+		return nil, err
 	}
-	return string(decoded), nil
+	return decoded, nil
 }

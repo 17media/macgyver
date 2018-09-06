@@ -26,10 +26,10 @@ func newgcp() Crypto {
 	return &gcp{client: newAuthenticatedClient()}
 }
 
-func (im *gcp) Encrypt(plaintext string) (string, error) {
+func (im *gcp) Encrypt(plaintext []byte) ([]byte, error) {
 	cloudkmsService, err := cloudkms.New(im.client)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	parentName := fmt.Sprintf("projects/%s/locations/%s/keyRings/%s/cryptoKeys/%s",
@@ -40,21 +40,21 @@ func (im *gcp) Encrypt(plaintext string) (string, error) {
 	)
 
 	req := &cloudkms.EncryptRequest{
-		Plaintext: b.StdEncoding.EncodeToString([]byte(plaintext)),
+		Plaintext: b.StdEncoding.EncodeToString(plaintext),
 	}
 
 	resp, err := cloudkmsService.Projects.Locations.KeyRings.CryptoKeys.Encrypt(parentName, req).Do()
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
-	return resp.Ciphertext, err
+	return []byte(resp.Ciphertext), err
 }
 
-func (im *gcp) Decrypt(ciphertext string) (string, error) {
+func (im *gcp) Decrypt(ciphertext []byte) ([]byte, error) {
 	cloudkmsService, err := cloudkms.New(im.client)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	parentName := fmt.Sprintf("projects/%s/locations/%s/keyRings/%s/cryptoKeys/%s",
@@ -68,17 +68,17 @@ func (im *gcp) Decrypt(ciphertext string) (string, error) {
 		log.Fatal(err)
 	}
 	req := &cloudkms.DecryptRequest{
-		Ciphertext: ciphertext,
+		Ciphertext: string(ciphertext),
 	}
 	resp, err := cloudkmsService.Projects.Locations.KeyRings.CryptoKeys.Decrypt(parentName, req).Do()
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 	text, err := b.StdEncoding.DecodeString(resp.Plaintext)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
-	return string(text), nil
+	return text, nil
 }
 
 func newAuthenticatedClient() *http.Client {

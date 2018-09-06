@@ -41,18 +41,18 @@ func encrypt(cmd *cobra.Command, args []string) {
 	p := crypto.Providers[cryptoProvide]
 
 	for _, value := range splitFlags {
-		encryptText := ""
+		var encryptText []byte
 		match := reEncryptFlag.FindStringSubmatch(value)
 
 		flag := &env{
 			key:   match[1],
 			value: match[2],
 		}
-		encryptText, err := p.Encrypt(flag.value)
+		encryptText, err := p.Encrypt([]byte(flag.value))
 		if err != nil {
 			log.Fatal(err)
 		}
-		flag.value = Perfix + encryptText
+		flag.value = Perfix + string(encryptText)
 		originalFlags = append(originalFlags, flag)
 	}
 

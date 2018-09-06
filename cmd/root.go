@@ -28,6 +28,7 @@ var RootCmd = &cobra.Command{
 which using key management. That tool friendly using golang's flags.
 For example:
 $ go run main.go decrypt \
+                --cryptoProvide=gcp \
                 --GCPprojectID="XX" \
                 --GCPlocationID="global" \
                 --GCPkeyRingID="OO" \
@@ -79,7 +80,7 @@ func init() {
 	viper.BindPFlag("GCPcryptoKeyID", RootCmd.PersistentFlags().Lookup("GCPcryptoKeyID"))
 
 	// var Perfix string
-	RootCmd.PersistentFlags().StringVar(&Perfix, "Perfix", "", "the perfix of secret")
+	RootCmd.PersistentFlags().StringVar(&Perfix, "Perfix", "<secret_perfix>", "the perfix of secret")
 	viper.BindPFlag("perfix", RootCmd.PersistentFlags().Lookup("perfix"))
 }
 

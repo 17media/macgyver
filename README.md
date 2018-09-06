@@ -4,7 +4,7 @@ A tool of decrypt and encrypt in Google Cloud Platform, which using key manageme
 ### Todo
 - [ ] Support environment variable
 - [ ] refine cryptoProvide
-  - [ ] Base64
+  - [x] Base64
   - [ ] AWS
-- [ ] customize prefix (ex. `<kms>`)
+- [x] customize prefix (ex. `<kms>`)
 - [x] go vendor version control

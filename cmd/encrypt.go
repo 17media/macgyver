@@ -3,13 +3,11 @@ package cmd
 import (
 	"fmt"
 	"log"
-	"net/http"
 	"regexp"
 	"strings"
 
-	"github.com/17media/macgyver/cmd/gcp"
+	"github.com/17media/macgyver/cmd/crypto"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 var encryptCmd = &cobra.Command{
@@ -27,18 +25,20 @@ const (
 
 func init() {
 	encryptCmd.MarkFlagRequired("flags")
+	encryptCmd.MarkFlagRequired("cryptoProvide")
 	encryptCmd.MarkFlagRequired("GCPprojectID")
 	encryptCmd.MarkFlagRequired("GCPlocationID")
 	encryptCmd.MarkFlagRequired("GCPkeyRingID")
 	encryptCmd.MarkFlagRequired("GCPcryptoKeyID")
+
 	RootCmd.AddCommand(encryptCmd)
 }
 
 func encrypt(cmd *cobra.Command, args []string) {
+	crypto.Init(cryptoProvide)
 	var originalFlags []*env
-	var client *http.Client
-	client = gcp.NewAuthenticatedClient()
-	splitFlags := strings.Split(viper.GetString("flags"), " ")
+	splitFlags := strings.Split(flags, " ")
+	p := crypto.Providers[cryptoProvide]
 
 	for _, value := range splitFlags {
 		encryptText := ""
@@ -48,16 +48,16 @@ func encrypt(cmd *cobra.Command, args []string) {
 			key:   match[1],
 			value: match[2],
 		}
-		encryptText, err := gcp.Encrypt(flag.value, client)
+		encryptText, err := p.Encrypt(flag.value)
 		if err != nil {
 			log.Fatal(err)
 		}
-		flag.value = "<kms>" + encryptText
+		flag.value = Perfix + encryptText
 		originalFlags = append(originalFlags, flag)
 	}
 
 	// Convert encrypted flags back to string
 	encryptedFlags := covertFlags(originalFlags)
 
-	fmt.Println(encryptedFlags)
+	fmt.Println(strings.TrimLeft(encryptedFlags, " "))
 }

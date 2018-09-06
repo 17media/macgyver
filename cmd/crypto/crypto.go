@@ -18,10 +18,10 @@ func Register(s string, f func() Crypto) {
 }
 
 // Init creates specified Crypto implementation and stores it in Providers
-func Init(cryptoProvide string) {
-	f, ok := ProviderNewFunc[cryptoProvide]
+func Init(cryptoProvider string) {
+	f, ok := ProviderNewFunc[cryptoProvider]
 	if !ok {
-		panic("Without support " + cryptoProvide + " encrypt")
+		panic("Without support " + cryptoProvider + " encrypt")
 	}
-	Providers[cryptoProvide] = f()
+	Providers[cryptoProvider] = f()
 }

@@ -25,7 +25,7 @@ const (
 
 func init() {
 	encryptCmd.MarkFlagRequired("flags")
-	encryptCmd.MarkFlagRequired("cryptoProvide")
+	encryptCmd.MarkFlagRequired("cryptoProvider")
 	encryptCmd.MarkFlagRequired("GCPprojectID")
 	encryptCmd.MarkFlagRequired("GCPlocationID")
 	encryptCmd.MarkFlagRequired("GCPkeyRingID")
@@ -35,10 +35,10 @@ func init() {
 }
 
 func encrypt(cmd *cobra.Command, args []string) {
-	crypto.Init(cryptoProvide)
+	crypto.Init(cryptoProvider)
 	var originalFlags []*env
 	splitFlags := strings.Split(flags, " ")
-	p := crypto.Providers[cryptoProvide]
+	p := crypto.Providers[cryptoProvider]
 
 	for _, value := range splitFlags {
 		var encryptText []byte

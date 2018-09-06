@@ -19,6 +19,7 @@ var decryptCmd = &cobra.Command{
 
 func init() {
 	decryptCmd.MarkFlagRequired("flags")
+	encryptCmd.MarkFlagRequired("cryptoProvider")
 	decryptCmd.MarkFlagRequired("GCPprojectID")
 	decryptCmd.MarkFlagRequired("GCPlocationID")
 	decryptCmd.MarkFlagRequired("GCPkeyRingID")
@@ -27,10 +28,10 @@ func init() {
 }
 
 func decrypt(cmd *cobra.Command, args []string) {
-	crypto.Init(cryptoProvide)
+	crypto.Init(cryptoProvider)
 	var originalFlags []*env
 	splitFlags := strings.Split(flags, " ")
-	p := crypto.Providers[cryptoProvide]
+	p := crypto.Providers[cryptoProvider]
 
 	decryptFlagRegexp := `^\-(\w*)=((?:` + Perfix + `))?(.*)$`
 	var reDecryptFlag = regexp.MustCompile(decryptFlagRegexp)

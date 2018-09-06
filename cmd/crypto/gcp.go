@@ -38,9 +38,11 @@ func (im *gcp) Encrypt(plaintext []byte) ([]byte, error) {
 		viper.GetString("GCPkeyRingID"),
 		viper.GetString("GCPcryptoKeyID"),
 	)
+	encodedPlaintext := make([]byte, b.StdEncoding.EncodedLen(len(plaintext)))
+	b.StdEncoding.Encode(encodedPlaintext, plaintext)
 
 	req := &cloudkms.EncryptRequest{
-		Plaintext: b.StdEncoding.EncodeToString(plaintext),
+		Plaintext: string(encodedPlaintext),
 	}
 
 	resp, err := cloudkmsService.Projects.Locations.KeyRings.CryptoKeys.Encrypt(parentName, req).Do()
@@ -83,9 +85,17 @@ func (im *gcp) Decrypt(ciphertext []byte) ([]byte, error) {
 
 func newAuthenticatedClient() *http.Client {
 	var client *http.Client
-	oAuthLocation := viper.GetString("oAuthLocation")
-	if len(oAuthLocation) > 0 {
-		data, err := ioutil.ReadFile(oAuthLocation)
+	oauth := viper.GetString("oAuthLocation")
+	if oauth == "" {
+		ctx := context.Background()
+		defaultClient, err := google.DefaultClient(ctx, cloudkms.CloudPlatformScope)
+		if err != nil {
+			log.Fatal(err)
+		}
+		client = defaultClient
+
+	} else {
+		data, err := ioutil.ReadFile(oauth)
 
 		if err != nil {
 			log.Fatal("unable to read JSON key file", err)
@@ -98,13 +108,6 @@ func newAuthenticatedClient() *http.Client {
 		// authorized and authenticated on the behalf of
 		// your service account.
 		client = conf.Client(oauth2.NoContext)
-	} else {
-		ctx := context.Background()
-		defaultClient, err := google.DefaultClient(ctx, cloudkms.CloudPlatformScope)
-		if err != nil {
-			log.Fatal(err)
-		}
-		client = defaultClient
 	}
 	return client
 }

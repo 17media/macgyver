@@ -18,7 +18,6 @@ func (im *base64) Encrypt(text []byte) ([]byte, error) {
 	encoded := make([]byte, b.StdEncoding.EncodedLen(len(text)))
 	b.StdEncoding.Encode(encoded, text)
 
-	// encoded := b.StdEncoding.EncodeToString(text)
 	return encoded, nil
 }
 

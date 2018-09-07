@@ -16,7 +16,7 @@ macgyver help
 
 #### Using base64
 
-Encrypt
+*Encrypt*
 ```
 macgyver encrypt \
           --cryptoProvider=base64 \
@@ -42,7 +42,7 @@ Output
 -db_URL=10.10.10.10 -db_user=root -db_password=password
 ```
 
-#### Using GCP KMS and
+#### Using GCP KMS and service account JSON key by Google
 
 Encrypt
 
@@ -61,10 +61,10 @@ Output
 -db_URL=<secret_perfix>CiQAfxfF5QJgZYEvFhWwtv/x4Fou2R/8EqLheUDV+cdod3pS0rASNACPVWdQ+uFI6GtGWICaqA1xgfTVnBE+Gp4F1BkAohhdIPjQvnx+kqUPxebOiK1GKKmkMoU= -db_user=<secret_perfix>CiQAfxfF5WuD0AfFN882MOtICNNNZ4Pj/QYERYiL/brcLcTRV9ISLQCPVWdQ8S1KZwNaZc6dIAXdoe8MIi26TcG1y5oeAqsxNxUp1Uxtz8mf1+8jvg== -db_password=<secret_perfix>CiQAfxfF5dBTxNZuLubqzLbilN0pzavOV7gyq7ZZHiH2oAEKm3MSMQCPVWdQhmTYSQwjIk4Xk5sgROOm4ExM0NacutDa7C2Ldp5qovv3uCJD4It/KHf5DUs=
 ```
 
-Encrypt
+Decrypt
 
 ```
-macgyver encrypt \
+macgyver decrypt \
           --cryptoProvider=gcp \
           --oAuthLocation=<oAuthLocation>.json \
           --GCPprojectID="<ProjectID>" \

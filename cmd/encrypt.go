@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/17media/macgyver/cmd/crypto"
+	"github.com/17media/macgyver/cmd/keys"
 	"github.com/spf13/cobra"
 )
 
@@ -36,28 +37,28 @@ func init() {
 
 func encrypt(cmd *cobra.Command, args []string) {
 	crypto.Init(cryptoProvider)
-	var originalFlags []*env
-	splitFlags := strings.Split(flags, " ")
 	p := crypto.Providers[cryptoProvider]
 
-	for _, value := range splitFlags {
-		var encryptText []byte
-		match := reEncryptFlag.FindStringSubmatch(value)
+	k, ok := keys.Types[cryptoType]
+	if !ok {
+		panic("Without support " + cryptoType + " encrypt")
+	}
 
-		flag := &env{
-			key:   match[1],
-			value: match[2],
-		}
-		encryptText, err := p.Encrypt([]byte(flag.value))
+	keyFlags, err := k.Import(flags, Perfix)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	for i, v := range keyFlags {
+		encryptText, err := p.Encrypt([]byte(v.Value))
 		if err != nil {
 			log.Fatal(err)
 		}
-		flag.value = Perfix + string(encryptText)
-		originalFlags = append(originalFlags, flag)
+		keyFlags[i].Value = string(encryptText)
 	}
 
 	// Convert encrypted flags back to string
-	encryptedFlags := covertFlags(originalFlags)
+	encryptedFlags := covertFlags(keyFlags)
 
 	fmt.Println(strings.TrimLeft(encryptedFlags, " "))
 }

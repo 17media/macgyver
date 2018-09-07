@@ -13,6 +13,7 @@ var (
 	cryptoProvider string
 	oAuthLocation  string
 	flags          string
+	cryptoType     string
 	GCPprojectID   string
 	GCPlocationID  string
 	GCPkeyRingID   string
@@ -54,6 +55,10 @@ func init() {
 	// var cryptoProvider string
 	RootCmd.PersistentFlags().StringVar(&cryptoProvider, "cryptoProvider", "", "Which type you using encrypto and encryto")
 	viper.BindPFlag("cryptoProvider", RootCmd.PersistentFlags().Lookup("cryptoProvider"))
+
+	// var cryptoType string
+	RootCmd.PersistentFlags().StringVar(&cryptoType, "cryptoType", "text", "Which type you using encrypto and encryto")
+	viper.BindPFlag("cryptoType", RootCmd.PersistentFlags().Lookup("cryptoType"))
 
 	// var oAuthLocation string
 	RootCmd.PersistentFlags().StringVar(&oAuthLocation, "oAuthLocation", "", "location of the JSON key credentials file. If empty then use the Google Application Defaults.")

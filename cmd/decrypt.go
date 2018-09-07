@@ -3,10 +3,10 @@ package cmd
 import (
 	"fmt"
 	"log"
-	"regexp"
 	"strings"
 
 	"github.com/17media/macgyver/cmd/crypto"
+	"github.com/17media/macgyver/cmd/keys"
 	"github.com/spf13/cobra"
 )
 
@@ -24,45 +24,42 @@ func init() {
 	decryptCmd.MarkFlagRequired("GCPlocationID")
 	decryptCmd.MarkFlagRequired("GCPkeyRingID")
 	decryptCmd.MarkFlagRequired("GCPcryptoKeyID")
+	decryptCmd.MarkFlagRequired("cryptoType")
 	RootCmd.AddCommand(decryptCmd)
 }
 
 func decrypt(cmd *cobra.Command, args []string) {
 	crypto.Init(cryptoProvider)
-	var originalFlags []*env
-	splitFlags := strings.Split(flags, " ")
 	p := crypto.Providers[cryptoProvider]
+	k, ok := keys.Types[cryptoType]
+	if !ok {
+		panic("Without support " + cryptoType + " encrypt")
+	}
 
-	decryptFlagRegexp := `^\-(\w*)=((?:` + Perfix + `))?(.*)$`
-	var reDecryptFlag = regexp.MustCompile(decryptFlagRegexp)
+	keyFlags, err := k.Import(flags, Perfix)
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	for _, value := range splitFlags {
-		match := reDecryptFlag.FindStringSubmatch(value)
-		flag := &env{
-			key:   match[1],
-			value: match[3],
-		}
-
-		// if it needs to be decrypted
-		if match[2] == Perfix {
-			decryptText, err := p.Decrypt([]byte(flag.value))
+	for i, v := range keyFlags {
+		if v.IsEncrypted {
+			decryptText, err := p.Decrypt([]byte(v.Value))
 			if err != nil {
 				log.Fatal(err)
 			}
-			flag.value = string(decryptText)
+			keyFlags[i].Value = string(decryptText)
 		}
-		originalFlags = append(originalFlags, flag)
 	}
 
 	// Convert decrypted flags back to string
-	decryptedFlags := covertFlags(originalFlags)
+	decryptedFlags := covertFlags(keyFlags)
 	fmt.Println(decryptedFlags)
 }
 
-func covertFlags(decrypt []*env) string {
+func covertFlags(decrypt []keys.Key) string {
 	var result string
 	for _, flag := range decrypt {
-		result += fmt.Sprintf(" -%s=%s", flag.key, flag.value)
+		result += fmt.Sprintf(" -%s=%s", flag.Key, flag.Value)
 	}
 	return strings.TrimLeft(result, " ")
 }

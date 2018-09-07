@@ -10,7 +10,7 @@ import (
 
 var (
 	cfgFile        string
-	cryptoProvide  string
+	cryptoProvider string
 	oAuthLocation  string
 	flags          string
 	GCPprojectID   string
@@ -28,6 +28,7 @@ var RootCmd = &cobra.Command{
 which using key management. That tool friendly using golang's flags.
 For example:
 $ go run main.go decrypt \
+                --cryptoProvider=gcp \
                 --GCPprojectID="XX" \
                 --GCPlocationID="global" \
                 --GCPkeyRingID="OO" \
@@ -50,9 +51,9 @@ func init() {
 	cobra.OnInitialize(initConfig)
 	RootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.macgyver.yaml)")
 
-	// var cryptoProvide string
-	RootCmd.PersistentFlags().StringVar(&cryptoProvide, "cryptoProvide", "", "Which type you using encrypto and encryto")
-	viper.BindPFlag("cryptoProvide", RootCmd.PersistentFlags().Lookup("cryptoProvide"))
+	// var cryptoProvider string
+	RootCmd.PersistentFlags().StringVar(&cryptoProvider, "cryptoProvider", "", "Which type you using encrypto and encryto")
+	viper.BindPFlag("cryptoProvider", RootCmd.PersistentFlags().Lookup("cryptoProvider"))
 
 	// var oAuthLocation string
 	RootCmd.PersistentFlags().StringVar(&oAuthLocation, "oAuthLocation", "", "location of the JSON key credentials file. If empty then use the Google Application Defaults.")
@@ -79,7 +80,7 @@ func init() {
 	viper.BindPFlag("GCPcryptoKeyID", RootCmd.PersistentFlags().Lookup("GCPcryptoKeyID"))
 
 	// var Perfix string
-	RootCmd.PersistentFlags().StringVar(&Perfix, "Perfix", "", "the perfix of secret")
+	RootCmd.PersistentFlags().StringVar(&Perfix, "Perfix", "<secret_perfix>", "the perfix of secret")
 	viper.BindPFlag("perfix", RootCmd.PersistentFlags().Lookup("perfix"))
 }
 

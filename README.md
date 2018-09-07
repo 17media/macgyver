@@ -1,10 +1,88 @@
 # macgyver
 A tool of decrypt and encrypt in Google Cloud Platform, which using key management. That tool friendly using golang's flags.
 
+### Installation
+
+```
+go get github.com/17media/macgyver
+```
+
+### Usage
+```
+macgyver help
+```
+
+### Command Use
+
+#### Using base64
+
+*Encrypt*
+```
+macgyver encrypt \
+          --cryptoProvider=base64 \
+          --flags="-db_URL=10.10.10.10 -db_user=root -db_password=password"
+```
+
+Output
+
+```
+-db_URL=<secret_perfix>MTAuMTAuMTAuMTA= -db_user=<secret_perfix>cm9vdA== -db_password=<secret_perfix>cGFzc3dvcmQ=
+```
+
+Decrypt
+```
+macgyver decrypt \
+          --cryptoProvider=base64 \
+          --flags="-db_URL=<secret_perfix>MTAuMTAuMTAuMTA= -db_user=<secret_perfix>cm9vdA== -db_password=<secret_perfix>cGFzc3dvcmQ="
+```
+
+Output
+
+```
+-db_URL=10.10.10.10 -db_user=root -db_password=password
+```
+
+#### Using GCP KMS and service account JSON key by Google
+
+Encrypt
+
+```
+macgyver encrypt \
+          --cryptoProvider=gcp \
+          --oAuthLocation=<oAuthLocation>.json \
+          --GCPprojectID="<ProjectID>" \
+          --GCPlocationID="<LocationID>" \
+          --GCPkeyRingID="<KeyRingID>" \
+          --GCPcryptoKeyID="<cryptoKeyID>" \
+          --flags="-db_URL=10.10.10.10 -db_user=root -db_password=password"
+```
+Output
+```
+-db_URL=<secret_perfix>CiQAfxfF5QJgZYEvFhWwtv/x4Fou2R/8EqLheUDV+cdod3pS0rASNACPVWdQ+uFI6GtGWICaqA1xgfTVnBE+Gp4F1BkAohhdIPjQvnx+kqUPxebOiK1GKKmkMoU= -db_user=<secret_perfix>CiQAfxfF5WuD0AfFN882MOtICNNNZ4Pj/QYERYiL/brcLcTRV9ISLQCPVWdQ8S1KZwNaZc6dIAXdoe8MIi26TcG1y5oeAqsxNxUp1Uxtz8mf1+8jvg== -db_password=<secret_perfix>CiQAfxfF5dBTxNZuLubqzLbilN0pzavOV7gyq7ZZHiH2oAEKm3MSMQCPVWdQhmTYSQwjIk4Xk5sgROOm4ExM0NacutDa7C2Ldp5qovv3uCJD4It/KHf5DUs=
+```
+
+Decrypt
+
+```
+macgyver decrypt \
+          --cryptoProvider=gcp \
+          --oAuthLocation=<oAuthLocation>.json \
+          --GCPprojectID="<ProjectID>" \
+          --GCPlocationID="<LocationID>" \
+          --GCPkeyRingID="<KeyRingID>" \
+          --GCPcryptoKeyID="<cryptoKeyID>" \
+          --flags="-db_URL=<secret_perfix>CiQAfxfF5QJgZYEvFhWwtv/x4Fou2R/8EqLheUDV+cdod3pS0rASNACPVWdQ+uFI6GtGWICaqA1xgfTVnBE+Gp4F1BkAohhdIPjQvnx+kqUPxebOiK1GKKmkMoU= -db_user=<secret_perfix>CiQAfxfF5WuD0AfFN882MOtICNNNZ4Pj/QYERYiL/brcLcTRV9ISLQCPVWdQ8S1KZwNaZc6dIAXdoe8MIi26TcG1y5oeAqsxNxUp1Uxtz8mf1+8jvg== -db_password=<secret_perfix>CiQAfxfF5dBTxNZuLubqzLbilN0pzavOV7gyq7ZZHiH2oAEKm3MSMQCPVWdQhmTYSQwjIk4Xk5sgROOm4ExM0NacutDa7C2Ldp5qovv3uCJD4It/KHf5DUs="
+```
+Output
+```
+-db_URL=10.10.10.10 -db_user=root -db_password=password
+```
+
+
 ### Todo
 - [ ] Support environment variable
 - [ ] refine cryptoProvide
-  - [ ] Base64
+  - [x] Base64
   - [ ] AWS
-- [ ] customize prefix (ex. `<kms>`)
+- [x] customize prefix (ex. `<kms>`)
 - [x] go vendor version control

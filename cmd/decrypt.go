@@ -6,9 +6,8 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/17media/macgyver/cmd/gcp"
+	"github.com/17media/macgyver/cmd/crypto"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 var decryptCmd = &cobra.Command{
@@ -18,14 +17,9 @@ var decryptCmd = &cobra.Command{
 	Args:  cobra.NoArgs,
 }
 
-var reDecryptFlag = regexp.MustCompile(decryptFlagRegexp)
-
-const (
-	decryptFlagRegexp = `^\-(\w*)=((?:<kms>))?(.*)$`
-)
-
 func init() {
 	decryptCmd.MarkFlagRequired("flags")
+	encryptCmd.MarkFlagRequired("cryptoProvider")
 	decryptCmd.MarkFlagRequired("GCPprojectID")
 	decryptCmd.MarkFlagRequired("GCPlocationID")
 	decryptCmd.MarkFlagRequired("GCPkeyRingID")
@@ -34,9 +28,14 @@ func init() {
 }
 
 func decrypt(cmd *cobra.Command, args []string) {
+	crypto.Init(cryptoProvider)
 	var originalFlags []*env
-	client := gcp.NewAuthenticatedClient()
-	splitFlags := strings.Split(viper.GetString("flags"), " ")
+	splitFlags := strings.Split(flags, " ")
+	p := crypto.Providers[cryptoProvider]
+
+	decryptFlagRegexp := `^\-(\w*)=((?:` + Perfix + `))?(.*)$`
+	var reDecryptFlag = regexp.MustCompile(decryptFlagRegexp)
+
 	for _, value := range splitFlags {
 		match := reDecryptFlag.FindStringSubmatch(value)
 		flag := &env{
@@ -45,8 +44,8 @@ func decrypt(cmd *cobra.Command, args []string) {
 		}
 
 		// if it needs to be decrypted
-		if match[2] == "<kms>" {
-			decryptText, err := gcp.Decrypt(flag.value, client)
+		if match[2] == Perfix {
+			decryptText, err := p.Decrypt([]byte(flag.value))
 			if err != nil {
 				log.Fatal(err)
 			}
@@ -65,5 +64,5 @@ func covertFlags(decrypt []*env) string {
 	for _, flag := range decrypt {
 		result += fmt.Sprintf(" -%s=%s", flag.key, flag.value)
 	}
-	return result
+	return strings.TrimLeft(result, " ")
 }

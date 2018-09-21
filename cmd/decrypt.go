@@ -29,16 +29,16 @@ func init() {
 }
 
 func decrypt(cmd *cobra.Command, args []string) {
+	var keyFlags []keys.Key
 	crypto.Init(cryptoProvider)
 	p := crypto.Providers[cryptoProvider]
-	k, ok := keys.Types[cryptoType]
-	if !ok {
-		panic("Without support " + cryptoType + " encrypt")
-	}
 
-	keyFlags, err := k.Import(flags, Perfix)
-	if err != nil {
-		log.Fatal(err)
+	if cryptoType == CryptoTypeName[0] {
+		keyFlags = keys.FlagsImporter(flags, Perfix)
+	} else if cryptoType == CryptoTypeName[1] {
+		keyFlags = keys.EnvsImporter(Perfix)
+	} else {
+		panic("Without support " + cryptoType + " cryptoType")
 	}
 
 	for i, v := range keyFlags {
@@ -51,9 +51,13 @@ func decrypt(cmd *cobra.Command, args []string) {
 		}
 	}
 
-	// Convert decrypted flags back to string
-	decryptedFlags := covertFlags(keyFlags)
-	fmt.Println(decryptedFlags)
+	if cryptoType == CryptoTypeName[0] {
+		// Convert decrypted flags back to string
+		decryptedFlags := covertFlags(keyFlags)
+		fmt.Println(decryptedFlags)
+	} else if cryptoType == CryptoTypeName[1] {
+		keys.EnvsOutputer(keyFlags)
+	}
 }
 
 func covertFlags(decrypt []keys.Key) string {

@@ -36,17 +36,14 @@ func init() {
 }
 
 func encrypt(cmd *cobra.Command, args []string) {
+	var keyFlags []keys.Key
 	crypto.Init(cryptoProvider)
 	p := crypto.Providers[cryptoProvider]
 
-	k, ok := keys.Types[cryptoType]
-	if !ok {
-		panic("Without support " + cryptoType + " encrypt")
-	}
-
-	keyFlags, err := k.Import(flags, Perfix)
-	if err != nil {
-		log.Fatal(err)
+	if cryptoType == CryptoTypeName[0] {
+		keyFlags = keys.FlagsImporter(flags, Perfix)
+	} else {
+		panic("Without support " + cryptoType + " cryptoType")
 	}
 
 	for i, v := range keyFlags {

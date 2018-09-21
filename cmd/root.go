@@ -21,6 +21,11 @@ var (
 	Perfix         string
 )
 
+var CryptoTypeName = map[int32]string{
+	0: "text",
+	1: "env",
+}
+
 // RootCmd represents the base command when called without any subcommands
 var RootCmd = &cobra.Command{
 	Use:   "macgyver",

@@ -1,10 +1,8 @@
 package cmd
 
 import (
-	"fmt"
 	"log"
 	"regexp"
-	"strings"
 
 	"github.com/17media/macgyver/cmd/crypto"
 	"github.com/17media/macgyver/cmd/keys"
@@ -55,7 +53,5 @@ func encrypt(cmd *cobra.Command, args []string) {
 	}
 
 	// Convert encrypted flags back to string
-	encryptedFlags := covertFlags(keyFlags)
-
-	fmt.Println(strings.TrimLeft(encryptedFlags, " "))
+	keys.FlagsExporter(keyFlags)
 }

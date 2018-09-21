@@ -1,9 +1,7 @@
 package cmd
 
 import (
-	"fmt"
 	"log"
-	"strings"
 
 	"github.com/17media/macgyver/cmd/crypto"
 	"github.com/17media/macgyver/cmd/keys"
@@ -52,18 +50,8 @@ func decrypt(cmd *cobra.Command, args []string) {
 	}
 
 	if cryptoType == CryptoTypeName[0] {
-		// Convert decrypted flags back to string
-		decryptedFlags := covertFlags(keyFlags)
-		fmt.Println(decryptedFlags)
+		keys.FlagsExporter(keyFlags)
 	} else if cryptoType == CryptoTypeName[1] {
-		keys.EnvsOutputer(keyFlags)
+		keys.EnvsExporter(keyFlags)
 	}
-}
-
-func covertFlags(decrypt []keys.Key) string {
-	var result string
-	for _, flag := range decrypt {
-		result += fmt.Sprintf(" -%s=%s", flag.Key, flag.Value)
-	}
-	return strings.TrimLeft(result, " ")
 }

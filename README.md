@@ -80,7 +80,7 @@ Output
 
 
 ### Todo
-- [ ] Support environment variable
+- [x] Support environment variable
 - [ ] refine cryptoProvide
   - [x] Base64
   - [ ] AWS

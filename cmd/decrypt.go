@@ -2,6 +2,8 @@ package cmd
 
 import (
 	"log"
+	"os"
+	"strings"
 
 	"github.com/17media/macgyver/cmd/crypto"
 	"github.com/17media/macgyver/cmd/keys"
@@ -22,23 +24,23 @@ func init() {
 	decryptCmd.MarkFlagRequired("GCPlocationID")
 	decryptCmd.MarkFlagRequired("GCPkeyRingID")
 	decryptCmd.MarkFlagRequired("GCPcryptoKeyID")
-	decryptCmd.MarkFlagRequired("cryptoType")
+	decryptCmd.MarkFlagRequired("keysType")
 	RootCmd.AddCommand(decryptCmd)
 }
 
 func decrypt(cmd *cobra.Command, args []string) {
-	var keyFlags []keys.Key
 	crypto.Init(cryptoProvider)
-	p := crypto.Providers[cryptoProvider]
-
-	if cryptoType == CryptoTypeName[0] {
-		keyFlags = keys.FlagsImporter(flags, Perfix)
-	} else if cryptoType == CryptoTypeName[1] {
-		keyFlags = keys.EnvsImporter(Perfix)
-	} else {
-		panic("Without support " + cryptoType + " cryptoType")
+	inputs := map[keys.Type][]string{
+		keys.TypeText: strings.Split(flags, " "),
+		keys.TypeEnv:  os.Environ(),
 	}
+	k, err := keys.Get(keysType)
+	if err != nil {
+		panic(err)
+	}
+	keyFlags := k.Import(inputs[keysType], Perfix)
 
+	p := crypto.Providers[cryptoProvider]
 	for i, v := range keyFlags {
 		if v.IsEncrypted {
 			decryptText, err := p.Decrypt([]byte(v.Value))
@@ -49,9 +51,5 @@ func decrypt(cmd *cobra.Command, args []string) {
 		}
 	}
 
-	if cryptoType == CryptoTypeName[0] {
-		keys.FlagsExporter(keyFlags)
-	} else if cryptoType == CryptoTypeName[1] {
-		keys.EnvsExporter(keyFlags)
-	}
+	k.Export(keyFlags)
 }

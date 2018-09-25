@@ -2,7 +2,9 @@ package cmd
 
 import (
 	"log"
+	"os"
 	"regexp"
+	"strings"
 
 	"github.com/17media/macgyver/cmd/crypto"
 	"github.com/17media/macgyver/cmd/keys"
@@ -34,16 +36,19 @@ func init() {
 }
 
 func encrypt(cmd *cobra.Command, args []string) {
-	var keyFlags []keys.Key
 	crypto.Init(cryptoProvider)
-	p := crypto.Providers[cryptoProvider]
-
-	if cryptoType == CryptoTypeName[0] {
-		keyFlags = keys.FlagsImporter(flags, Perfix)
-	} else {
-		panic("Without support " + cryptoType + " cryptoType")
+	inputs := map[keys.Type][]string{
+		keys.TypeText: strings.Split(flags, " "),
+		keys.TypeEnv:  os.Environ(),
 	}
 
+	k, err := keys.Get(keysType)
+	if err != nil {
+		panic(err)
+	}
+	keyFlags := k.Import(inputs[keysType], Perfix)
+
+	p := crypto.Providers[cryptoProvider]
 	for i, v := range keyFlags {
 		encryptText, err := p.Encrypt([]byte(v.Value))
 		if err != nil {
@@ -53,5 +58,5 @@ func encrypt(cmd *cobra.Command, args []string) {
 	}
 
 	// Convert encrypted flags back to string
-	keys.FlagsExporter(keyFlags)
+	k.Export(keyFlags)
 }

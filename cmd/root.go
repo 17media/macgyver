@@ -6,6 +6,8 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+
+	"github.com/17media/macgyver/cmd/keys"
 )
 
 var (
@@ -13,18 +15,13 @@ var (
 	cryptoProvider string
 	oAuthLocation  string
 	flags          string
-	cryptoType     string
+	keysType       keys.Type
 	GCPprojectID   string
 	GCPlocationID  string
 	GCPkeyRingID   string
 	GCPcryptoKeyID string
 	Perfix         string
 )
-
-var CryptoTypeName = map[int32]string{
-	0: "text",
-	1: "env",
-}
 
 // RootCmd represents the base command when called without any subcommands
 var RootCmd = &cobra.Command{
@@ -61,9 +58,9 @@ func init() {
 	RootCmd.PersistentFlags().StringVar(&cryptoProvider, "cryptoProvider", "", "Which type you using encrypto and encryto")
 	viper.BindPFlag("cryptoProvider", RootCmd.PersistentFlags().Lookup("cryptoProvider"))
 
-	// var cryptoType string
-	RootCmd.PersistentFlags().StringVar(&cryptoType, "cryptoType", "text", "Which type you using encrypto and encryto")
-	viper.BindPFlag("cryptoType", RootCmd.PersistentFlags().Lookup("cryptoType"))
+	// var keysType string
+	RootCmd.PersistentFlags().StringVar((*string)(&keysType), "keysType", "text", "Which input type you using for encrypto and encryto")
+	viper.BindPFlag("keysType", RootCmd.PersistentFlags().Lookup("keysType"))
 
 	// var oAuthLocation string
 	RootCmd.PersistentFlags().StringVar(&oAuthLocation, "oAuthLocation", "", "location of the JSON key credentials file. If empty then use the Google Application Defaults.")
@@ -90,7 +87,7 @@ func init() {
 	viper.BindPFlag("GCPcryptoKeyID", RootCmd.PersistentFlags().Lookup("GCPcryptoKeyID"))
 
 	// var Perfix string
-	RootCmd.PersistentFlags().StringVar(&Perfix, "Perfix", "<secret_perfix>", "the perfix of secret")
+	RootCmd.PersistentFlags().StringVar(&Perfix, "Perfix", "<secret_perfix>", "the perfix of secret")
 	viper.BindPFlag("perfix", RootCmd.PersistentFlags().Lookup("perfix"))
 }
 

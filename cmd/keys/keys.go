@@ -2,14 +2,28 @@ package keys
 
 import (
 	"fmt"
-	"os"
 	"regexp"
 	"strings"
 )
 
+type Type string
+
+const (
+	TypeText Type = "text"
+	TypeEnv       = "env"
+)
+
+var (
+	keys = map[Type]Keys{
+		TypeText: &flagsKeys{},
+		TypeEnv:  &envsKeys{},
+	}
+)
+
 // Keys defines keys operations
 type Keys interface {
-	Import(string, string) ([]Key, error)
+	Import(input []string, perfix string) []Key
+	Export(keys []Key)
 }
 
 type Key struct {
@@ -18,12 +32,23 @@ type Key struct {
 	IsEncrypted bool
 }
 
-func EnvsImporter(perfix string) []Key {
+func Get(t Type) (Keys, error) {
+	k, ok := keys[t]
+	if !ok {
+		return nil, fmt.Errorf("Without support %+v keys.Type", t)
+	}
+	return k, nil
+}
+
+type envsKeys struct {
+}
+
+func (e *envsKeys) Import(input []string, perfix string) []Key {
 	var k []Key
 	decryptEnvFlagRegexp := `^(\w*)=((?:` + perfix + `))?(.*)$`
 	var reDecryptEnv = regexp.MustCompile(decryptEnvFlagRegexp)
 
-	for _, value := range os.Environ() {
+	for _, value := range input {
 		match := reDecryptEnv.FindStringSubmatch(value)
 		flag := &Key{
 			Key:         match[1],
@@ -37,32 +62,21 @@ func EnvsImporter(perfix string) []Key {
 	return k
 }
 
-func covertFlags(decrypt []Key) string {
-	var result string
-	for _, flag := range decrypt {
-		result += fmt.Sprintf(" -%s=%s", flag.Key, flag.Value)
-	}
-	return strings.TrimLeft(result, " ")
-}
-
-func EnvsExporter(keys []Key) {
+func (e *envsKeys) Export(keys []Key) {
 	for _, k := range keys {
 		fmt.Printf("export %s='%s'\n", k.Key, k.Value)
 	}
 }
 
-func FlagsExporter(keys []Key) {
-	flags := covertFlags(keys)
-	fmt.Println(strings.TrimLeft(flags, " "))
+type flagsKeys struct {
 }
 
-func FlagsImporter(args, perfix string) []Key {
+func (f *flagsKeys) Import(input []string, perfix string) []Key {
 	var k []Key
 	decryptFlagRegexp := `^\-(\w*)=((?:` + perfix + `))?(.*)$`
 	var reDecryptFlag = regexp.MustCompile(decryptFlagRegexp)
 
-	splitargs := strings.Split(args, " ")
-	for _, value := range splitargs {
+	for _, value := range input {
 		match := reDecryptFlag.FindStringSubmatch(value)
 		flag := &Key{
 			Key:         match[1],
@@ -72,4 +86,17 @@ func FlagsImporter(args, perfix string) []Key {
 		k = append(k, *flag)
 	}
 	return k
+}
+
+func (f *flagsKeys) Export(keys []Key) {
+	flags := covertFlags(keys)
+	fmt.Println(strings.TrimLeft(flags, " "))
+}
+
+func covertFlags(decrypt []Key) string {
+	var result string
+	for _, flag := range decrypt {
+		result += fmt.Sprintf(" -%s=%s", flag.Key, flag.Value)
+	}
+	return strings.TrimLeft(result, " ")
 }

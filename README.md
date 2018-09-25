@@ -14,7 +14,7 @@ macgyver help
 
 ### Command Use
 
-#### Using base64
+#### Using base64 with text
 
 *Encrypt*
 ```
@@ -42,7 +42,7 @@ Output
 -db_URL=10.10.10.10 -db_user=root -db_password=password
 ```
 
-#### Using GCP KMS and service account JSON key by Google
+#### Using GCP KMS and service account JSON key by Google with text
 
 Encrypt
 
@@ -78,9 +78,65 @@ Output
 -db_URL=10.10.10.10 -db_user=root -db_password=password
 ```
 
+#### Using base64 with environment variables
+
+Decrypt
+```
+# time ./macgyver decrypt \
+export db_URL="<secret_perfix>MTAuMTAuMTAuMTA="
+export db_user="<secret_perfix>cm9vdA=="
+export db_password="password"
+
+eval $(macgyver decrypt \
+                --cryptoProvider=base64 \
+                --cryptoType=env)
+echo $db_URL
+echo $db_user
+echo $db_password
+```
+
+Output
+
+```
+10.10.10.10
+root
+password
+```
+
+#### Using GCP KMS and service account JSON key by Google with environment variables
+
+
+Decrypt
+
+```
+export db_URL="<secret_perfix>CiQAfxfF5QJgZYEvFhWwtv/x4Fou2R/8EqLheUDV+cdod3pS0rASNACPVWdQ+uFI6GtGWICaqA1xgfTVnBE+Gp4F1BkAohhdIPjQvnx+kqUPxebOiK1GKKmkMoU=
+export db_user="<secret_perfix>CiQAfxfF5WuD0AfFN882MOtICNNNZ4Pj/QYERYiL/brcLcTRV9ISLQCPVWdQ8S1KZwNaZc6dIAXdoe8MIi26TcG1y5oeAqsxNxUp1Uxtz8mf1+8jvg=="
+export db_password="password"
+
+eval $(macgyver decrypt \
+          --cryptoProvider=gcp \
+          --cryptoType=env \
+          --oAuthLocation=<oAuthLocation>.json \
+          --GCPprojectID="<ProjectID>" \
+          --GCPlocationID="<LocationID>" \
+          --GCPkeyRingID="<KeyRingID>" \
+          --GCPcryptoKeyID="<cryptoKeyID>")
+
+echo $db_URL
+echo $db_user
+echo $db_password
+
+```
+Output
+```
+10.10.10.10
+root
+password
+```
+
 
 ### Todo
-- [ ] Support environment variable
+- [x] Support environment variable
 - [ ] refine cryptoProvide
   - [x] Base64
   - [ ] AWS

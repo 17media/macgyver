@@ -22,7 +22,7 @@ var (
 
 // Keys defines keys operations
 type Keys interface {
-	Import(input []string, perfix string) []Key
+	Import(input []string, prefix string) []Key
 	Export(keys []Key)
 }
 
@@ -43,9 +43,9 @@ func Get(t Type) (Keys, error) {
 type envsKeys struct {
 }
 
-func (e *envsKeys) Import(input []string, perfix string) []Key {
+func (e *envsKeys) Import(input []string, prefix string) []Key {
 	var k []Key
-	decryptEnvFlagRegexp := `^(\w*)=((?:` + perfix + `))?(.*)$`
+	decryptEnvFlagRegexp := `^(\w*)=((?:` + prefix + `))?(.*)$`
 	var reDecryptEnv = regexp.MustCompile(decryptEnvFlagRegexp)
 
 	for _, value := range input {
@@ -53,7 +53,7 @@ func (e *envsKeys) Import(input []string, perfix string) []Key {
 		flag := &Key{
 			Key:         match[1],
 			Value:       match[3],
-			IsEncrypted: match[2] == perfix,
+			IsEncrypted: match[2] == prefix,
 		}
 		if flag.IsEncrypted {
 			k = append(k, *flag)
@@ -71,9 +71,9 @@ func (e *envsKeys) Export(keys []Key) {
 type flagsKeys struct {
 }
 
-func (f *flagsKeys) Import(input []string, perfix string) []Key {
+func (f *flagsKeys) Import(input []string, prefix string) []Key {
 	var k []Key
-	decryptFlagRegexp := `^\-(\w*)=((?:` + perfix + `))?(.*)$`
+	decryptFlagRegexp := `^\-(\w*)=((?:` + prefix + `))?(.*)$`
 	var reDecryptFlag = regexp.MustCompile(decryptFlagRegexp)
 
 	for _, value := range input {
@@ -81,7 +81,7 @@ func (f *flagsKeys) Import(input []string, perfix string) []Key {
 		flag := &Key{
 			Key:         match[1],
 			Value:       match[3],
-			IsEncrypted: match[2] == perfix,
+			IsEncrypted: match[2] == prefix,
 		}
 		k = append(k, *flag)
 	}

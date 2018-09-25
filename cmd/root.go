@@ -20,7 +20,7 @@ var (
 	GCPlocationID  string
 	GCPkeyRingID   string
 	GCPcryptoKeyID string
-	Perfix         string
+	Prefix         string
 )
 
 // RootCmd represents the base command when called without any subcommands
@@ -86,9 +86,9 @@ func init() {
 	RootCmd.PersistentFlags().StringVar(&GCPcryptoKeyID, "GCPcryptoKeyID", "", "the cryptoKeyID of GCP")
 	viper.BindPFlag("GCPcryptoKeyID", RootCmd.PersistentFlags().Lookup("GCPcryptoKeyID"))
 
-	// var Perfix string
-	RootCmd.PersistentFlags().StringVar(&Perfix, "Perfix", "<secret_perfix>", "the perfix of secret")
-	viper.BindPFlag("perfix", RootCmd.PersistentFlags().Lookup("perfix"))
+	// var Prefix string
+	RootCmd.PersistentFlags().StringVar(&Prefix, "Prefix", "<secret_prefix>", "the prefix of secret")
+	viper.BindPFlag("prefix", RootCmd.PersistentFlags().Lookup("prefix"))
 }
 
 // initConfig reads in config file and ENV variables if set.

@@ -38,7 +38,7 @@ func decrypt(cmd *cobra.Command, args []string) {
 	if err != nil {
 		panic(err)
 	}
-	keyFlags := k.Import(inputs[keysType], Perfix)
+	keyFlags := k.Import(inputs[keysType], Prefix)
 
 	p := crypto.Providers[cryptoProvider]
 	for i, v := range keyFlags {

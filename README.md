@@ -26,14 +26,14 @@ macgyver encrypt \
 Output
 
 ```
--db_URL=<secret_perfix>MTAuMTAuMTAuMTA= -db_user=<secret_perfix>cm9vdA== -db_password=<secret_perfix>cGFzc3dvcmQ=
+-db_URL=<secret_prefix>MTAuMTAuMTAuMTA= -db_user=<secret_prefix>cm9vdA== -db_password=<secret_prefix>cGFzc3dvcmQ=
 ```
 
 Decrypt
 ```
 macgyver decrypt \
           --cryptoProvider=base64 \
-          --flags="-db_URL=<secret_perfix>MTAuMTAuMTAuMTA= -db_user=<secret_perfix>cm9vdA== -db_password=<secret_perfix>cGFzc3dvcmQ="
+          --flags="-db_URL=<secret_prefix>MTAuMTAuMTAuMTA= -db_user=<secret_prefix>cm9vdA== -db_password=<secret_prefix>cGFzc3dvcmQ="
 ```
 
 Output
@@ -58,7 +58,7 @@ macgyver encrypt \
 ```
 Output
 ```
--db_URL=<secret_perfix>CiQAfxfF5QJgZYEvFhWwtv/x4Fou2R/8EqLheUDV+cdod3pS0rASNACPVWdQ+uFI6GtGWICaqA1xgfTVnBE+Gp4F1BkAohhdIPjQvnx+kqUPxebOiK1GKKmkMoU= -db_user=<secret_perfix>CiQAfxfF5WuD0AfFN882MOtICNNNZ4Pj/QYERYiL/brcLcTRV9ISLQCPVWdQ8S1KZwNaZc6dIAXdoe8MIi26TcG1y5oeAqsxNxUp1Uxtz8mf1+8jvg== -db_password=<secret_perfix>CiQAfxfF5dBTxNZuLubqzLbilN0pzavOV7gyq7ZZHiH2oAEKm3MSMQCPVWdQhmTYSQwjIk4Xk5sgROOm4ExM0NacutDa7C2Ldp5qovv3uCJD4It/KHf5DUs=
+-db_URL=<secret_prefix>CiQAfxfF5QJgZYEvFhWwtv/x4Fou2R/8EqLheUDV+cdod3pS0rASNACPVWdQ+uFI6GtGWICaqA1xgfTVnBE+Gp4F1BkAohhdIPjQvnx+kqUPxebOiK1GKKmkMoU= -db_user=<secret_prefix>CiQAfxfF5WuD0AfFN882MOtICNNNZ4Pj/QYERYiL/brcLcTRV9ISLQCPVWdQ8S1KZwNaZc6dIAXdoe8MIi26TcG1y5oeAqsxNxUp1Uxtz8mf1+8jvg== -db_password=<secret_prefix>CiQAfxfF5dBTxNZuLubqzLbilN0pzavOV7gyq7ZZHiH2oAEKm3MSMQCPVWdQhmTYSQwjIk4Xk5sgROOm4ExM0NacutDa7C2Ldp5qovv3uCJD4It/KHf5DUs=
 ```
 
 Decrypt
@@ -71,7 +71,7 @@ macgyver decrypt \
           --GCPlocationID="<LocationID>" \
           --GCPkeyRingID="<KeyRingID>" \
           --GCPcryptoKeyID="<cryptoKeyID>" \
-          --flags="-db_URL=<secret_perfix>CiQAfxfF5QJgZYEvFhWwtv/x4Fou2R/8EqLheUDV+cdod3pS0rASNACPVWdQ+uFI6GtGWICaqA1xgfTVnBE+Gp4F1BkAohhdIPjQvnx+kqUPxebOiK1GKKmkMoU= -db_user=<secret_perfix>CiQAfxfF5WuD0AfFN882MOtICNNNZ4Pj/QYERYiL/brcLcTRV9ISLQCPVWdQ8S1KZwNaZc6dIAXdoe8MIi26TcG1y5oeAqsxNxUp1Uxtz8mf1+8jvg== -db_password=<secret_perfix>CiQAfxfF5dBTxNZuLubqzLbilN0pzavOV7gyq7ZZHiH2oAEKm3MSMQCPVWdQhmTYSQwjIk4Xk5sgROOm4ExM0NacutDa7C2Ldp5qovv3uCJD4It/KHf5DUs="
+          --flags="-db_URL=<secret_prefix>CiQAfxfF5QJgZYEvFhWwtv/x4Fou2R/8EqLheUDV+cdod3pS0rASNACPVWdQ+uFI6GtGWICaqA1xgfTVnBE+Gp4F1BkAohhdIPjQvnx+kqUPxebOiK1GKKmkMoU= -db_user=<secret_prefix>CiQAfxfF5WuD0AfFN882MOtICNNNZ4Pj/QYERYiL/brcLcTRV9ISLQCPVWdQ8S1KZwNaZc6dIAXdoe8MIi26TcG1y5oeAqsxNxUp1Uxtz8mf1+8jvg== -db_password=<secret_prefix>CiQAfxfF5dBTxNZuLubqzLbilN0pzavOV7gyq7ZZHiH2oAEKm3MSMQCPVWdQhmTYSQwjIk4Xk5sgROOm4ExM0NacutDa7C2Ldp5qovv3uCJD4It/KHf5DUs="
 ```
 Output
 ```
@@ -83,13 +83,13 @@ Output
 Decrypt
 ```
 # time ./macgyver decrypt \
-export db_URL="<secret_perfix>MTAuMTAuMTAuMTA="
-export db_user="<secret_perfix>cm9vdA=="
+export db_URL="<secret_prefix>MTAuMTAuMTAuMTA="
+export db_user="<secret_prefix>cm9vdA=="
 export db_password="password"
 
 eval $(macgyver decrypt \
                 --cryptoProvider=base64 \
-                --cryptoType=env)
+                --keysType=env)
 echo $db_URL
 echo $db_user
 echo $db_password
@@ -109,13 +109,13 @@ password
 Decrypt
 
 ```
-export db_URL="<secret_perfix>CiQAfxfF5QJgZYEvFhWwtv/x4Fou2R/8EqLheUDV+cdod3pS0rASNACPVWdQ+uFI6GtGWICaqA1xgfTVnBE+Gp4F1BkAohhdIPjQvnx+kqUPxebOiK1GKKmkMoU=
-export db_user="<secret_perfix>CiQAfxfF5WuD0AfFN882MOtICNNNZ4Pj/QYERYiL/brcLcTRV9ISLQCPVWdQ8S1KZwNaZc6dIAXdoe8MIi26TcG1y5oeAqsxNxUp1Uxtz8mf1+8jvg=="
+export db_URL="<secret_prefix>CiQAfxfF5QJgZYEvFhWwtv/x4Fou2R/8EqLheUDV+cdod3pS0rASNACPVWdQ+uFI6GtGWICaqA1xgfTVnBE+Gp4F1BkAohhdIPjQvnx+kqUPxebOiK1GKKmkMoU=
+export db_user="<secret_prefix>CiQAfxfF5WuD0AfFN882MOtICNNNZ4Pj/QYERYiL/brcLcTRV9ISLQCPVWdQ8S1KZwNaZc6dIAXdoe8MIi26TcG1y5oeAqsxNxUp1Uxtz8mf1+8jvg=="
 export db_password="password"
 
 eval $(macgyver decrypt \
           --cryptoProvider=gcp \
-          --cryptoType=env \
+          --keysType=env \
           --oAuthLocation=<oAuthLocation>.json \
           --GCPprojectID="<ProjectID>" \
           --GCPlocationID="<LocationID>" \

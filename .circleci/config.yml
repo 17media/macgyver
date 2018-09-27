@@ -1,0 +1,77 @@
+version: 2
+
+references:
+  default: &default
+    working_directory: /go/src/github.com/17media/macgyver
+    docker:
+      - image: circleci/golang:1.10.4
+
+  govendor_cache_key: &govendor_cache_key
+    govendor-{{ checksum "vendor/vendor.json" }}
+  macgyver_bin_cache_key: &macgyver_bin_cache_key
+    macgyver-bin-{{ .Environment.CIRCLE_SHA1 }}
+
+jobs:
+  build: 
+    <<: *default
+    steps:
+      - checkout
+      - restore_cache:
+          name: "Restore cache: govendor"
+          key: *govendor_cache_key
+      - run:
+          name: "Collect Go Dependencies"
+          command: |
+            go get github.com/kardianos/govendor
+            govendor sync
+      - save_cache:
+          name: "Save cache: govendor"
+          key: *govendor_cache_key
+          paths:
+            - vendor
+      - run:
+          name: "Bulid macgyver for x86_64"
+          environment:
+            CGO_ENABLED: 0
+            GOOS: linux
+            GOARCH: amd64
+          command: |
+            go build -o macgyver main.go
+      - save_cache:
+          name: "Save cache: macgyver"
+          key: *macgyver_bin_cache_key
+          paths:
+            - macgyver
+  release:
+    <<: *default
+    steps:
+      - checkout
+      - restore_cache:
+          name: "Restore cache: macgyver"
+          key: *macgyver_bin_cache_key
+      - run: 
+          name: "Compress built macgyver"
+          command: |
+            tar zcvf macgyver.tar.gz macgyver
+      - run: go get -u github.com/tcnksm/ghr
+      - run:
+          name: "Create release for macgyver"
+          command: |
+            tag=$(git tag -l --points-at HEAD)
+            ghr -t $GITHUB_TOKEN -u $CIRCLE_PROJECT_USERNAME -r $CIRCLE_PROJECT_REPONAME --replace $tag macgyver.tar.gz
+
+workflows:
+  version: 2
+  build-only:
+    jobs:
+      - build
+  release-git:
+    jobs:
+      - build
+      - release:
+          requires:
+            - build
+          filters:
+            tags:
+              only: /^v.*/
+

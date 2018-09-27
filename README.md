@@ -142,3 +142,4 @@ password
   - [ ] AWS
 - [x] customize prefix (ex. `<kms>`)
 - [x] go vendor version control
+- [ ] add unit test

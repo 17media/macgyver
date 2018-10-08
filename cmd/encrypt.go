@@ -50,11 +50,14 @@ func encrypt(cmd *cobra.Command, args []string) {
 
 	p := crypto.Providers[cryptoProvider]
 	for i, v := range keyFlags {
-		encryptText, err := p.Encrypt([]byte(v.Value))
-		if err != nil {
-			log.Fatal(err)
+		encryptText := []byte(v.Value)
+		if !v.IsEncrypted {
+			encryptText, err = p.Encrypt([]byte(v.Value))
+			if err != nil {
+				log.Fatal(err)
+			}
 		}
-		keyFlags[i].Value = string(encryptText)
+		keyFlags[i].Value = Prefix + string(encryptText)
 	}
 
 	// Convert encrypted flags back to string

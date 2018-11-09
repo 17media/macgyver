@@ -5,9 +5,10 @@ import (
 	"os"
 	"strings"
 
+	"github.com/spf13/cobra"
+
 	"github.com/17media/macgyver/cmd/crypto"
 	"github.com/17media/macgyver/cmd/keys"
-	"github.com/spf13/cobra"
 )
 
 var decryptCmd = &cobra.Command{
@@ -36,20 +37,26 @@ func decrypt(cmd *cobra.Command, args []string) {
 	}
 	k, err := keys.Get(keysType)
 	if err != nil {
-		panic(err)
+		log.Panic(err)
 	}
-	keyFlags := k.Import(inputs[keysType], Prefix)
+	keyFlags := k.Import(inputs[keysType], SecretTag)
 
+	// Decrype all secrets that are encrypted of each key
 	p := crypto.Providers[cryptoProvider]
-	for i, v := range keyFlags {
-		if v.IsEncrypted {
-			decryptText, err := p.Decrypt([]byte(v.Value))
-			if err != nil {
-				log.Fatal(err)
+	for _, k := range keyFlags {
+		for _, s := range k.Secrets {
+			if !s.IsEncrypted {
+				continue
 			}
-			keyFlags[i].Value = string(decryptText)
+			decryptText, err := p.Decrypt([]byte(s.Text))
+			if err != nil {
+				log.Panic(err)
+			}
+			s.Text = string(decryptText)
+			s.IsEncrypted = false
 		}
 	}
 
-	k.Export(keyFlags)
+	// Convert decrypted keys back to string
+	k.Export(keyFlags, SecretTag, os.Stdout)
 }

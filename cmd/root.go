@@ -20,7 +20,7 @@ var (
 	GCPlocationID  string
 	GCPkeyRingID   string
 	GCPcryptoKeyID string
-	Prefix         string
+	SecretTag      string
 )
 
 // RootCmd represents the base command when called without any subcommands
@@ -36,9 +36,7 @@ $ go run main.go decrypt \
                 --GCPlocationID="global" \
                 --GCPkeyRingID="OO" \
                 --GCPcryptoKeyID="test" \
-                --flags="-a=kms_asda"
-
--a=secret`,
+                --flags="-a=kms_asda`,
 }
 
 // Execute adds all child commands to the root command sets flags appropriately.
@@ -86,9 +84,10 @@ func init() {
 	RootCmd.PersistentFlags().StringVar(&GCPcryptoKeyID, "GCPcryptoKeyID", "", "the cryptoKeyID of GCP")
 	viper.BindPFlag("GCPcryptoKeyID", RootCmd.PersistentFlags().Lookup("GCPcryptoKeyID"))
 
-	// var Prefix string
-	RootCmd.PersistentFlags().StringVar(&Prefix, "Prefix", "<secret_prefix>", "the prefix of secret")
-	viper.BindPFlag("prefix", RootCmd.PersistentFlags().Lookup("prefix"))
+	// var SecretTag string
+	RootCmd.PersistentFlags().StringVar(&SecretTag, "secretTag", "secret_tag", "the prefix of secret")
+	viper.BindPFlag("secretTag", RootCmd.PersistentFlags().Lookup("secretTag"))
+
 }
 
 // initConfig reads in config file and ENV variables if set.

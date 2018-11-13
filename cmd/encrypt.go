@@ -51,8 +51,8 @@ func encrypt(cmd *cobra.Command, args []string) {
 
 	// Encrypt all secrets that are not encrypted of each key
 	p := crypto.Providers[cryptoProvider]
-	for _, k := range keyFlags {
-		for _, s := range k.Secrets {
+	for _, keyFlag := range keyFlags {
+		for _, s := range keyFlag.Secrets {
 			if s.IsEncrypted {
 				continue
 			}

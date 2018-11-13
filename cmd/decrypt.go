@@ -43,8 +43,8 @@ func decrypt(cmd *cobra.Command, args []string) {
 
 	// Decrype all secrets that are encrypted of each key
 	p := crypto.Providers[cryptoProvider]
-	for _, k := range keyFlags {
-		for _, s := range k.Secrets {
+	for _, keyFlag := range keyFlags {
+		for _, s := range keyFlag.Secrets {
 			if !s.IsEncrypted {
 				continue
 			}

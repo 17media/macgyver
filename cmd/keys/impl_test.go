@@ -190,7 +190,7 @@ func (s *keysTestSuite) TestFlagsKeys() {
 					},
 				},
 			},
-			expExportedStr: "-flag1=flag-AAA -flag2=NotSecretPrefixflag-BBBNotSecretSuffix -flag3=flag-CCC",
+			expExportedStr: "-flag1=flag-AAA -flag2=NotSecretPrefixflag-BBBNotSecretSuffix -flag3=flag-CCC\n",
 		},
 		{
 			desc: "test one secret ciphertexts",
@@ -221,7 +221,7 @@ func (s *keysTestSuite) TestFlagsKeys() {
 					},
 				},
 			},
-			expExportedStr: "-flag1=NotSecretPrefix<SECRET_TAG>flag-AAA</SECRET_TAG>NotSecretSuffix -flag2=<SECRET_TAG>flag-BBB</SECRET_TAG>",
+			expExportedStr: "-flag1=NotSecretPrefix<SECRET_TAG>flag-AAA</SECRET_TAG>NotSecretSuffix -flag2=<SECRET_TAG>flag-BBB</SECRET_TAG>\n",
 		},
 		{
 			desc: "test mixed secrets",
@@ -249,7 +249,7 @@ func (s *keysTestSuite) TestFlagsKeys() {
 					},
 				},
 			},
-			expExportedStr: "-mongoURI=mongo://plaintext_userName:<SECRET_TAG>ciphertext_password</SECRET_TAG>@1.2.3.4:8080/production",
+			expExportedStr: "-mongoURI=mongo://plaintext_userName:<SECRET_TAG>ciphertext_password</SECRET_TAG>@1.2.3.4:8080/production\n",
 		},
 	}
 

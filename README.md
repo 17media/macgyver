@@ -148,8 +148,8 @@ password
        `-test4=not-secret-flag` => `-test4=not-secret-flag`
     2. All tagged secrets between the secret tag will be decrypted. Example:   
         `-test1=<TAG>Ciphertext-1</TAG>` => `-test1=secret-flag`  
-        `-test1=<TAG>Ciphertext-2</TAG>` => `-test2=<tag>secret-flag</tag>`  
-        and `-test3=NotSecretPrefix/<TAG>ciphertext-3</TAG>/NotSecretSuffix` => `-test3=NotSecretPrefix/<tag>secret-flag</tag>/NotSecretSuffix`
+        `-test2=<TAG>Ciphertext-2</TAG>` => `-test2=secret-flag`  
+        and `-test3=NotSecretPrefix/<TAG>ciphertext-3</TAG>/NotSecretSuffix` => `-test3=NotSecretPrefix/secret-flag/NotSecretSuffix`
 
 
 ### Todo

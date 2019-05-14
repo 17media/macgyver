@@ -15,7 +15,7 @@ macgyver help
 ### Command Use
 
 #### Using base64 with text
-## CAUTION: `DO NOT` Use Base64 to Encrypt Credentials in Production Environment
+## CAUTION: `DO NOT` Use Base64 in Production Environment
 
 *Encrypt*
 ```

@@ -1,4 +1,4 @@
-# macgyver
+# Macgyver
 A tool of decrypt and encrypt in Google Cloud Platform, which using key management. That tool friendly using golang's flags.
 
 ### Installation
@@ -15,9 +15,7 @@ macgyver help
 ### Command Use
 
 #### Using base64 with text
-```
-CAUTION: DO NOT Use Base64 To Encrypt Crendential in Production Environment
-```
+## CAUTION: `DO NOT` Use Base64 to Encrypt Credentials in Production Environment
 
 *Encrypt*
 ```

@@ -14,8 +14,8 @@ macgyver help
 
 ### Command Use
 
-#### Using base64 with text
-## CAUTION: `DO NOT` Use Base64 in Production Environment
+#### Using Base64 with text
+## CAUTION: `Base64` is for testing, `DO NOT` use it in `production` environment.
 
 *Encrypt*
 ```
@@ -79,7 +79,7 @@ Output
 -db_URL=10.10.10.10 -db_user=root -db_password=password
 ```
 
-#### Using base64 with environment variables
+#### Using Base64 with environment variables
 
 Decrypt
 ```

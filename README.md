@@ -15,6 +15,8 @@ macgyver help
 ### Command Use
 
 #### Using base64 with text
+##### Caution:
+## Do Not Use Base64 To Encrypt Crendential in Production Environment
 
 *Encrypt*
 ```

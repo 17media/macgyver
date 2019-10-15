@@ -19,7 +19,7 @@ type envsKeys struct {
 
 func (e *envsKeys) Import(input []string, secretTag string) []Key {
 	var ks []Key
-	envRegexp := `^(\w*)=(.*)$`
+	envRegexp := `^(\w+)=(.+)$`
 	reEnv := regexp.MustCompile(envRegexp)
 	reSecret := getSecretRegexp(secretTag)
 	for _, env := range input {
@@ -51,7 +51,7 @@ type flagsKeys struct {
 
 func (f *flagsKeys) Import(input []string, secretTag string) []Key {
 	var ks []Key
-	flagRegexp := `^\-(\w*)=(.*)$`
+	flagRegexp := `^\-(\w+)=(.+)$`
 	reFlag := regexp.MustCompile(flagRegexp)
 	reSecret := getSecretRegexp(secretTag)
 	for _, flag := range input {

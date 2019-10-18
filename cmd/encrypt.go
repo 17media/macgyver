@@ -3,7 +3,6 @@ package cmd
 import (
 	"log"
 	"os"
-	"regexp"
 	"strings"
 
 	"github.com/spf13/cobra"
@@ -19,10 +18,8 @@ var encryptCmd = &cobra.Command{
 	Args:  cobra.NoArgs,
 }
 
-var reEncryptFlag = regexp.MustCompile(encryptFlagRegexp)
-
 const (
-	encryptFlagRegexp = `^\-(\w*)=(.*)$`
+	encryptFlagRegexp = `^\-(\w+)=(.+)$`
 )
 
 func init() {

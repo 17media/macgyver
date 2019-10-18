@@ -20,12 +20,13 @@ var decryptCmd = &cobra.Command{
 
 func init() {
 	decryptCmd.MarkFlagRequired("flags")
-	encryptCmd.MarkFlagRequired("cryptoProvider")
+	decryptCmd.MarkFlagRequired("cryptoProvider")
 	decryptCmd.MarkFlagRequired("GCPprojectID")
 	decryptCmd.MarkFlagRequired("GCPlocationID")
 	decryptCmd.MarkFlagRequired("GCPkeyRingID")
 	decryptCmd.MarkFlagRequired("GCPcryptoKeyID")
 	decryptCmd.MarkFlagRequired("keysType")
+
 	RootCmd.AddCommand(decryptCmd)
 }
 
@@ -41,7 +42,7 @@ func decrypt(cmd *cobra.Command, args []string) {
 	}
 	keyFlags := k.Import(inputs[keysType], SecretTag)
 
-	// Decrype all secrets that are encrypted of each key
+	// Decrypt all secrets that are encrypted of each key
 	p := crypto.Providers[cryptoProvider]
 	for _, keyFlag := range keyFlags {
 		for _, s := range keyFlag.Secrets {

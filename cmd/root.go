@@ -16,11 +16,13 @@ var (
 	oAuthLocation  string
 	flags          string
 	keysType       keys.Type
+	SecretTag      string
 	GCPprojectID   string
 	GCPlocationID  string
 	GCPkeyRingID   string
 	GCPcryptoKeyID string
-	SecretTag      string
+	AWSlocationID  string
+	AWScryptoKeyID string
 )
 
 // RootCmd represents the base command when called without any subcommands
@@ -30,12 +32,12 @@ var RootCmd = &cobra.Command{
 	Long: `A tool of decrypt and encrypt in Google Cloud Platform,
 which using key management. That tool friendly using golang's flags.
 For example:
-$ go run main.go decrypt \
-                --cryptoProvider=gcp \
-                --GCPprojectID="XX" \
+$ go run main.go decrypt                 \
+                --cryptoProvider=gcp     \
+                --GCPprojectID="XX"      \
                 --GCPlocationID="global" \
-                --GCPkeyRingID="OO" \
-                --GCPcryptoKeyID="test" \
+                --GCPkeyRingID="OO"      \
+                --GCPcryptoKeyID="test"  \
                 --flags="-a=kms_asda`,
 }
 
@@ -59,6 +61,10 @@ func init() {
 	// var keysType string
 	RootCmd.PersistentFlags().StringVar((*string)(&keysType), "keysType", "text", "Which input type you using for encrypto and encryto")
 	viper.BindPFlag("keysType", RootCmd.PersistentFlags().Lookup("keysType"))
+
+	// var SecretTag string
+	RootCmd.PersistentFlags().StringVar(&SecretTag, "secretTag", "secret_tag", "the prefix of secret")
+	viper.BindPFlag("secretTag", RootCmd.PersistentFlags().Lookup("secretTag"))
 
 	// var oAuthLocation string
 	RootCmd.PersistentFlags().StringVar(&oAuthLocation, "oAuthLocation", "", "location of the JSON key credentials file. If empty then use the Google Application Defaults.")
@@ -84,10 +90,13 @@ func init() {
 	RootCmd.PersistentFlags().StringVar(&GCPcryptoKeyID, "GCPcryptoKeyID", "", "the cryptoKeyID of GCP")
 	viper.BindPFlag("GCPcryptoKeyID", RootCmd.PersistentFlags().Lookup("GCPcryptoKeyID"))
 
-	// var SecretTag string
-	RootCmd.PersistentFlags().StringVar(&SecretTag, "secretTag", "secret_tag", "the prefix of secret")
-	viper.BindPFlag("secretTag", RootCmd.PersistentFlags().Lookup("secretTag"))
+	// var AWSlocationID string
+	RootCmd.PersistentFlags().StringVar(&AWSlocationID, "AWSlocationID", "", "the cryptoKeyID of AWS")
+	viper.BindPFlag("AWSlocationID", RootCmd.PersistentFlags().Lookup("AWSlocationID"))
 
+	// var AWScryptoKeyID string
+	RootCmd.PersistentFlags().StringVar(&AWScryptoKeyID, "AWScryptoKeyID", "", "the cryptoKeyID of AWS")
+	viper.BindPFlag("AWScryptoKeyID", RootCmd.PersistentFlags().Lookup("AWScryptoKeyID"))
 }
 
 // initConfig reads in config file and ENV variables if set.

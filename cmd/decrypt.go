@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 
 	"github.com/17media/macgyver/cmd/crypto"
 	"github.com/17media/macgyver/cmd/keys"
@@ -21,11 +22,20 @@ var decryptCmd = &cobra.Command{
 func init() {
 	decryptCmd.MarkFlagRequired("flags")
 	decryptCmd.MarkFlagRequired("cryptoProvider")
-	decryptCmd.MarkFlagRequired("GCPprojectID")
-	decryptCmd.MarkFlagRequired("GCPlocationID")
-	decryptCmd.MarkFlagRequired("GCPkeyRingID")
-	decryptCmd.MarkFlagRequired("GCPcryptoKeyID")
 	decryptCmd.MarkFlagRequired("keysType")
+
+	switch viper.GetString("cryptoProvider") {
+	case "gcp":
+		decryptCmd.MarkFlagRequired("GCPprojectID")
+		decryptCmd.MarkFlagRequired("GCPlocationID")
+		decryptCmd.MarkFlagRequired("GCPkeyRingID")
+		decryptCmd.MarkFlagRequired("GCPcryptoKeyID")
+	case "aws":
+		decryptCmd.MarkFlagRequired("AWSlocationID")
+		decryptCmd.MarkFlagRequired("AWScryptoKeyID")
+	default:
+
+	}
 
 	RootCmd.AddCommand(decryptCmd)
 }

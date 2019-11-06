@@ -29,15 +29,15 @@ var (
 var RootCmd = &cobra.Command{
 	Use:   "macgyver",
 	Short: "A tool of decrypt and encrypt in GCP KMS",
-	Long: `A tool of decrypt and encrypt in Google Cloud Platform,
-which using key management. That tool friendly using golang's flags.
+	Long: `A tool for decrypting and encrypting strings in GCP / AWS by using KMS,
+The tool is golang's flags friendly.
 For example:
 $ go run main.go decrypt                 \
                 --cryptoProvider=gcp     \
-                --GCPprojectID="XX"      \
+                --GCPprojectID="demo"    \
                 --GCPlocationID="global" \
-                --GCPkeyRingID="OO"      \
-                --GCPcryptoKeyID="test"  \
+                --GCPkeyRingID="foo"     \
+                --GCPcryptoKeyID="bar"   \
                 --flags="-a=kms_asda`,
 }
 

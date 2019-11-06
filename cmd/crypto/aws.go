@@ -50,10 +50,10 @@ func (im *aws) Encrypt(input []byte) ([]byte, error) {
 		return nil, err
 	}
 
-	encodedPlaintext := make([]byte, b.StdEncoding.EncodedLen(len(resp.CiphertextBlob)))
-	b.StdEncoding.Encode(encodedPlaintext, resp.CiphertextBlob)
+	encodedCiphertext := make([]byte, b.StdEncoding.EncodedLen(len(resp.CiphertextBlob)))
+	b.StdEncoding.Encode(encodedCiphertext, resp.CiphertextBlob)
 
-	return encodedPlaintext, nil
+	return encodedCiphertext, nil
 }
 
 func (im *aws) Decrypt(input []byte) ([]byte, error) {

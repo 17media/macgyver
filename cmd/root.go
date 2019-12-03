@@ -99,7 +99,7 @@ func init() {
 	RootCmd.PersistentFlags().StringVar(&AWScryptoKeyID, "AWScryptoKeyID", "", "the cryptoKeyID of AWS")
 	viper.BindPFlag("AWScryptoKeyID", RootCmd.PersistentFlags().Lookup("AWScryptoKeyID"))
 
-	// var AWSprofile string
+	// var AWSprofileName string
 	RootCmd.PersistentFlags().StringVar(&AWSprofileName, "AWSprofileName", "", "the profile name used for AWS authentication")
 	viper.BindPFlag("AWSprofileName", RootCmd.PersistentFlags().Lookup("AWSprofileName"))
 }

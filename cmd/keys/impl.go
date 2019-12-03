@@ -3,6 +3,7 @@ package keys
 import (
 	"fmt"
 	"io"
+	"log"
 	"regexp"
 	"strings"
 )
@@ -23,11 +24,14 @@ func (e *envsKeys) Import(input []string, secretTag string) []Key {
 	reEnv := regexp.MustCompile(envRegexp)
 	reSecret := getSecretRegexp(secretTag)
 	for _, env := range input {
-		kv := reEnv.FindStringSubmatch(env)
+		key, value, err := getKVfromInput(env, reEnv)
+		if err != nil {
+			log.Panic(err)
+		}
 		ks = append(ks, Key{
-			Key:     kv[1],
-			Value:   kv[2],
-			Secrets: reSecret.parseValueToSecrets(kv[2]),
+			Key:     key,
+			Value:   value,
+			Secrets: reSecret.parseValueToSecrets(value),
 		})
 	}
 	return ks
@@ -55,11 +59,14 @@ func (f *flagsKeys) Import(input []string, secretTag string) []Key {
 	reFlag := regexp.MustCompile(flagRegexp)
 	reSecret := getSecretRegexp(secretTag)
 	for _, flag := range input {
-		kv := reFlag.FindStringSubmatch(flag)
+		key, value, err := getKVfromInput(flag, reFlag)
+		if err != nil {
+			log.Panic(err)
+		}
 		ks = append(ks, Key{
-			Key:     kv[1],
-			Value:   kv[2],
-			Secrets: reSecret.parseValueToSecrets(kv[2]),
+			Key:     key,
+			Value:   value,
+			Secrets: reSecret.parseValueToSecrets(value),
 		})
 	}
 	return ks
@@ -76,6 +83,16 @@ func (f *flagsKeys) Export(keys []Key, secretTag string, writeCloser io.WriteClo
 		return err
 	}
 	return writeCloser.Close()
+}
+
+func getKVfromInput(input string, re *regexp.Regexp) (key string, value string, err error) {
+	kv := re.FindStringSubmatch(input)
+	if len(kv) != 3 {
+		return "", "", fmt.Errorf("Cannot find value for key %s", input)
+	}
+	key = kv[1]
+	value = kv[2]
+	return key, value, nil
 }
 
 func getSecretRegexp(secretTag string) *secretRegexp {

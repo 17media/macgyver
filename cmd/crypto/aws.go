@@ -23,15 +23,26 @@ func newAWS() Crypto {
 }
 
 func newSession() *session.Session {
+	profile := viper.GetString("AWSprofileName")
+	if profile != "" {
+		sess, err := session.NewSessionWithOptions(session.Options{
+			SharedConfigState: session.SharedConfigEnable,
+			Profile:           profile,
+		})
+
+		if err != nil {
+			log.Fatal(err)
+		}
+		return sess
+	}
+
 	region := viper.GetString("AWSlocationID")
 	sess, err := session.NewSession(&a.Config{
 		Region: a.String(region),
 	})
-
 	if err != nil {
 		log.Fatal(err)
 	}
-
 	return sess
 }
 

@@ -32,7 +32,8 @@ Available Commands:
 
 Flags:
       --AWScryptoKeyID string   the cryptoKeyID of AWS
-      --AWSlocationID string    the cryptoKeyID of AWS
+      --AWSlocationID string    the locationID of AWS
+      --AWSprofileName string   the profile name used for AWS authentication
       --GCPcryptoKeyID string   the cryptoKeyID of GCP
       --GCPkeyRingID string     the keyRingID of GCP
       --GCPlocationID string    the locationID of GCP
@@ -124,6 +125,7 @@ Output
 ### Using AWS KMS with text
 
 #### Encrypt
+Using ENVs for AWS authentication
 ```
 # Export your account credentials to access the AWS KMS service
 export AWS_ACCESS_KEY_ID='<aws_access_key_id>'
@@ -136,12 +138,30 @@ $ macgyver encrypt                      \
           --flags="-db_URL=10.10.10.10 -db_user=root -db_password=password"
 ```
 
+Using AWS profile configured in ~/.aws/config
+```
+$cat ~/.aws/config
+
+[profile <ProfileName>]
+region = us-west-2
+role_arn = arn:aws:iam:::role/*
+source_profile = <source profile name configured in ~/.aws/credentials>
+
+$ macgyver encrypt                         \
+          --cryptoProvider="aws"           \
+          --AWSprofileName="<ProfileName>" \
+          --AWSlocationID="<LocatioID>"    \
+          --AWScryptoKeyID="<KeyID>"       \
+          --flags="-db_URL=10.10.10.10 -db_user=root -db_password=password"
+```
+
 Output
 ```
 -db_URL=<SECRET_TAG>CiQAfxfF5QJgZYEvFhWwtv/x4Fou2R/8EqLheUDV+cdod3pS0rASNACPVWdQ+uFI6GtGWICaqA1xgfTVnBE+Gp4F1BkAohhdIPjQvnx+kqUPxebOiK1GKKmkMoU=</SECRET_TAG> -db_user=<SECRET_TAG>CiQAfxfF5WuD0AfFN882MOtICNNNZ4Pj/QYERYiL/brcLcTRV9ISLQCPVWdQ8S1KZwNaZc6dIAXdoe8MIi26TcG1y5oeAqsxNxUp1Uxtz8mf1+8jvg==</SECRET_TAG> -db_password=<SECRET_TAG>CiQAfxfF5dBTxNZuLubqzLbilN0pzavOV7gyq7ZZHiH2oAEKm3MSMQCPVWdQhmTYSQwjIk4Xk5sgROOm4ExM0NacutDa7C2Ldp5qovv3uCJD4It/KHf5DUs=</SECRET_TAG>
 ```
 
 #### Decrypt
+Using ENVs for AWS authentication
 ```
 # Export your account credentials to access the AWS KMS service
 export AWS_ACCESS_KEY_ID='<aws_access_key_id>'
@@ -151,6 +171,23 @@ $ macgyver decrypt                      \
           --cryptoProvider="aws"        \
           --AWSlocationID="<LocatioID>" \
           --AWScryptoKeyID="<KeyID>"    \
+          --flags="-db_URL=<SECRET_TAG>CiQAfxfF5QJgZYEvFhWwtv/x4Fou2R/8EqLheUDV+cdod3pS0rASNACPVWdQ+uFI6GtGWICaqA1xgfTVnBE+Gp4F1BkAohhdIPjQvnx+kqUPxebOiK1GKKmkMoU=</SECRET_TAG> -db_user=<SECRET_TAG>CiQAfxfF5WuD0AfFN882MOtICNNNZ4Pj/QYERYiL/brcLcTRV9ISLQCPVWdQ8S1KZwNaZc6dIAXdoe8MIi26TcG1y5oeAqsxNxUp1Uxtz8mf1+8jvg==</SECRET_TAG> -db_password=<SECRET_TAG>CiQAfxfF5dBTxNZuLubqzLbilN0pzavOV7gyq7ZZHiH2oAEKm3MSMQCPVWdQhmTYSQwjIk4Xk5sgROOm4ExM0NacutDa7C2Ldp5qovv3uCJD4It/KHf5DUs=</SECRET_TAG>"
+```
+
+Using AWS profile configured in ~/.aws/config
+```
+$cat ~/.aws/config
+
+[profile <ProfileName>]
+region = us-west-2
+role_arn = arn:aws:iam:::role/*
+source_profile = <source profile name configured in ~/.aws/credentials>
+
+$ macgyver decrypt                         \
+          --cryptoProvider="aws"           \
+          --AWSprofileName="<ProfileName>" \
+          --AWSlocationID="<LocatioID>"    \
+          --AWScryptoKeyID="<KeyID>"       \
           --flags="-db_URL=<SECRET_TAG>CiQAfxfF5QJgZYEvFhWwtv/x4Fou2R/8EqLheUDV+cdod3pS0rASNACPVWdQ+uFI6GtGWICaqA1xgfTVnBE+Gp4F1BkAohhdIPjQvnx+kqUPxebOiK1GKKmkMoU=</SECRET_TAG> -db_user=<SECRET_TAG>CiQAfxfF5WuD0AfFN882MOtICNNNZ4Pj/QYERYiL/brcLcTRV9ISLQCPVWdQ8S1KZwNaZc6dIAXdoe8MIi26TcG1y5oeAqsxNxUp1Uxtz8mf1+8jvg==</SECRET_TAG> -db_password=<SECRET_TAG>CiQAfxfF5dBTxNZuLubqzLbilN0pzavOV7gyq7ZZHiH2oAEKm3MSMQCPVWdQhmTYSQwjIk4Xk5sgROOm4ExM0NacutDa7C2Ldp5qovv3uCJD4It/KHf5DUs=</SECRET_TAG>"
 ```
 

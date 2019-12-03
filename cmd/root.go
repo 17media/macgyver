@@ -23,6 +23,7 @@ var (
 	GCPcryptoKeyID string
 	AWSlocationID  string
 	AWScryptoKeyID string
+	AWSprofileName string
 )
 
 // RootCmd represents the base command when called without any subcommands
@@ -97,6 +98,10 @@ func init() {
 	// var AWScryptoKeyID string
 	RootCmd.PersistentFlags().StringVar(&AWScryptoKeyID, "AWScryptoKeyID", "", "the cryptoKeyID of AWS")
 	viper.BindPFlag("AWScryptoKeyID", RootCmd.PersistentFlags().Lookup("AWScryptoKeyID"))
+
+	// var AWSprofileName string
+	RootCmd.PersistentFlags().StringVar(&AWSprofileName, "AWSprofileName", "", "the profile name used for AWS authentication")
+	viper.BindPFlag("AWSprofileName", RootCmd.PersistentFlags().Lookup("AWSprofileName"))
 }
 
 // initConfig reads in config file and ENV variables if set.

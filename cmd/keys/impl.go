@@ -26,7 +26,7 @@ func (e *envsKeys) Import(input []string, secretTag string) []Key {
 	for _, env := range input {
 		key, value, err := getKVfromInput(env, reEnv)
 		if err != nil {
-			log.Panic(err)
+			log.Printf("WARN: %s\n", err)
 		}
 		ks = append(ks, Key{
 			Key:     key,
@@ -61,7 +61,7 @@ func (f *flagsKeys) Import(input []string, secretTag string) []Key {
 	for _, flag := range input {
 		key, value, err := getKVfromInput(flag, reFlag)
 		if err != nil {
-			log.Panic(err)
+			log.Printf("WARN: %s\n", err)
 		}
 		ks = append(ks, Key{
 			Key:     key,
@@ -88,7 +88,10 @@ func (f *flagsKeys) Export(keys []Key, secretTag string, writeCloser io.WriteClo
 func getKVfromInput(input string, re *regexp.Regexp) (key string, value string, err error) {
 	kv := re.FindStringSubmatch(input)
 	if len(kv) != 3 {
-		return "", "", fmt.Errorf("Cannot find value for key %s", input)
+		emptyRegexp := `^\-(\w+)=$`
+		emptyFlag := regexp.MustCompile(emptyRegexp)
+		k := emptyFlag.FindStringSubmatch(input)
+		return k[1], "", fmt.Errorf("Cannot find value for key \"%s\"", k[1])
 	}
 	key = kv[1]
 	value = kv[2]

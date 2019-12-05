@@ -63,6 +63,9 @@ func encrypt(cmd *cobra.Command, args []string) {
 			if s.IsEncrypted {
 				continue
 			}
+			if s.Text == "" {
+				continue
+			}
 			encryptText, err := p.Encrypt([]byte(s.Text))
 			if err != nil {
 				log.Panic(err)

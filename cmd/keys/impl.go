@@ -42,7 +42,7 @@ func (e *envsKeys) Export(keys []Key, secretTag string, writeCloser io.WriteClos
 	reSecret := getSecretRegexp(secretTag)
 	for _, k := range keys {
 		newValue := reSecret.replaceSecrets(k.Value, k.Secrets)
-		exportStrs += fmt.Sprintf("export %s='%s'\n", k.Key, newValue)
+		exportStrs += fmt.Sprintf(`export %s="%s"\n`, k.Key, newValue)
 	}
 	if _, err := writeCloser.Write([]byte(exportStrs)); err != nil {
 		return err
@@ -91,7 +91,7 @@ func getKVfromInput(input string, re *regexp.Regexp) (key string, value string, 
 		emptyRegexp := `^\-(\w+)=$`
 		emptyFlag := regexp.MustCompile(emptyRegexp)
 		k := emptyFlag.FindStringSubmatch(input)
-		return k[1], "", fmt.Errorf("Cannot find value for key \"%s\"", k[1])
+		return k[1], "", fmt.Errorf(`Cannot find value for key "%s"`, k[1])
 	}
 	key = kv[1]
 	value = kv[2]

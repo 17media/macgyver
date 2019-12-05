@@ -42,7 +42,7 @@ func (e *envsKeys) Export(keys []Key, secretTag string, writeCloser io.WriteClos
 	reSecret := getSecretRegexp(secretTag)
 	for _, k := range keys {
 		newValue := reSecret.replaceSecrets(k.Value, k.Secrets)
-		exportStrs += fmt.Sprintf("export %s=\"%s\"\n", k.Key, newValue)
+		exportStrs += fmt.Sprintf("export %s='%s'\n", k.Key, newValue)
 	}
 	if _, err := writeCloser.Write([]byte(exportStrs)); err != nil {
 		return err

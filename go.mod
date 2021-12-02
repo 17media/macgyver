@@ -13,6 +13,7 @@ require (
 
 require (
 	cloud.google.com/go v0.9.1-0.20170623165407-9d0d2cf2897d // indirect
+	github.com/BurntSushi/toml v0.4.1 // indirect
 	github.com/davecgh/go-spew v1.1.0 // indirect
 	github.com/fsnotify/fsnotify v1.4.7 // indirect
 	github.com/golang/protobuf v0.0.0-20170622202551-6a1fa9404c0a // indirect
@@ -28,6 +29,7 @@ require (
 	github.com/spf13/jwalterweatherman v0.0.0-20180814060501-14d3d4c51834 // indirect
 	github.com/spf13/pflag v1.0.3-0.20180815210406-947b89bd1b7d // indirect
 	golang.org/x/net v0.0.0-20170624000434-5f8847ae0d0e // indirect
+	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c // indirect
 	golang.org/x/sys v0.0.0-20180816055513-1c9583448a9c // indirect
 	golang.org/x/text v0.3.1-0.20180810153555-6e3c4e7365dd // indirect
 	google.golang.org/appengine v1.0.1-0.20161025185029-46239ca61684 // indirect

@@ -89,7 +89,7 @@ Output
 #### Decrypt && Encrypt
 ```zsh
 
-PROJECT=media17-uat
+PROJECT=media17-stag
 
 cipher_text=$(macgyver decrypt          \
           --cryptoProvider=gcp          \
@@ -122,6 +122,7 @@ macgyver encrypt                               \
 
 # USAGE
 # zsh decryp.zsh "<SECRET_TAG>cipher_text</SECRET_TAG>"
+# Note that, you should change PROJECT name based on your demand
 ```
 
 Output

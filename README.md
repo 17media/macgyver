@@ -86,6 +86,55 @@ Output
 
 ### Using GCP KMS and service account JSON key by Google with text
 
+#### Decrypt && Encrypt
+```zsh
+
+PROJECT=media17-uat
+
+cipher_text=$(macgyver decrypt          \
+          --cryptoProvider=gcp          \
+          --GCPprojectID=${PROJECT}     \
+          --GCPlocationID=global        \
+          --GCPkeyRingID=app            \
+          --GCPcryptoKeyID=flags        \
+          --flags="-key=${1}")
+
+echo '#######################'
+echo 'cipher text >>> '$cipher_text
+arr=("${(@s/=/)cipher_text}")
+cipher=$arr[2]
+echo 'cipher >>> '$cipher
+
+PROVIDER=gcp
+PROJECT=media17-uat
+
+echo '==============='
+echo $PROJECT
+echo '==============='
+macgyver encrypt                               \
+	  --cryptoProvider="${PROVIDER}"             \
+	  --keysType=text                            \
+          --GCPprojectID="${PROJECT}"          \
+          --GCPlocationID=global               \
+          --GCPkeyRingID=app                   \
+          --GCPcryptoKeyID=flags               \
+          --flags="-pwd=${cipher}" 
+
+# USAGE
+# zsh decryp.zsh "<SECRET_TAG>cipher_text</SECRET_TAG>"
+```
+
+Output
+```
+#######################
+cipher text >>> -key=ciphertext
+===============
+plaintext
+===============
+-pwd=<SECRET_TAG>new_ciphertext</SECRET_TAG>
+```
+
+
 #### Encrypt
 ```
 $ macgyver encrypt                             \

@@ -15,6 +15,7 @@ var (
 	cryptoProvider string
 	oAuthLocation  string
 	flags          string
+	file           string
 	keysType       keys.Type
 	SecretTag      string
 	GCPprojectID   string
@@ -102,6 +103,10 @@ func init() {
 	// var AWSprofileName string
 	RootCmd.PersistentFlags().StringVar(&AWSprofileName, "AWSprofileName", "", "the profile name used for AWS authentication")
 	viper.BindPFlag("AWSprofileName", RootCmd.PersistentFlags().Lookup("AWSprofileName"))
+
+	// var file string
+	RootCmd.PersistentFlags().StringVar(&file, "file", "", "file want to decrypt/encrypt")
+	viper.BindPFlag("file", RootCmd.PersistentFlags().Lookup("file"))
 }
 
 // initConfig reads in config file and ENV variables if set.

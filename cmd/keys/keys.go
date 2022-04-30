@@ -11,6 +11,7 @@ type Type string
 const (
 	TypeText Type = "text"
 	TypeEnv       = "env"
+	TypeFile      = "file"
 )
 
 // Get returns the Keys of a Type is exists

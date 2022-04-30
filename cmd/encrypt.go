@@ -45,36 +45,37 @@ func init() {
 
 func encrypt(cmd *cobra.Command, args []string) {
 	crypto.Init(cryptoProvider)
-	inputs := map[keys.Type][]string{
-		keys.TypeText: strings.Split(flags, " "),
-		keys.TypeEnv:  os.Environ(),
-	}
-
 	k, err := keys.Get(keysType)
 	if err != nil {
 		log.Panic(err)
 	}
-	keyFlags := k.Import(inputs[keysType], SecretTag)
 
-	// Encrypt all secrets that are not encrypted of each key
-	p := crypto.Providers[cryptoProvider]
-	for _, keyFlag := range keyFlags {
-		for _, s := range keyFlag.Secrets {
-			if s.IsEncrypted {
-				continue
+	// use file, flags oe env
+	switch keysType {
+	case keys.TypeText:
+		keyFlags := k.Import(strings.Split(flags, " "), SecretTag)
+		// Encrypt all secrets that are not encrypted of each key
+		p := crypto.Providers[cryptoProvider]
+		for _, keyFlag := range keyFlags {
+			for _, s := range keyFlag.Secrets {
+				if s.IsEncrypted {
+					continue
+				}
+				encryptText, err := p.Encrypt([]byte(s.Text))
+				if err != nil {
+					log.Panic(err)
+				}
+				s.Text = string(encryptText)
+				s.IsEncrypted = true
 			}
-			if s.Text == "" {
-				continue
-			}
-			encryptText, err := p.Encrypt([]byte(s.Text))
-			if err != nil {
-				log.Panic(err)
-			}
-			s.Text = string(encryptText)
-			s.IsEncrypted = true
 		}
+		// Convert decrypted keys back to string
+		k.Export(keyFlags, SecretTag, os.Stdout)
+	case keys.TypeFile:
+		log.Panic("file type is not ready")
+	case keys.TypeEnv:
+		log.Panic("env type is not ready")
+	default:
+		log.Panicf("keysType does not support %s", keysType)
 	}
-
-	// Convert encrypted keys back to string
-	k.Export(keyFlags, SecretTag, os.Stdout)
 }

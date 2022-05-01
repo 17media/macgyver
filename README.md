@@ -32,7 +32,7 @@ Available Commands:
 
 Flags:
       --AWScryptoKeyID string   the cryptoKeyID of AWS
-      --AWSlocationID string    the locationID of AWS
+      --AWSlocationID string    the cryptoKeyID of AWS
       --AWSprofileName string   the profile name used for AWS authentication
       --GCPcryptoKeyID string   the cryptoKeyID of GCP
       --GCPkeyRingID string     the keyRingID of GCP
@@ -40,10 +40,10 @@ Flags:
       --GCPprojectID string     the projectID of GCP
       --config string           config file (default is $HOME/.macgyver.yaml)
       --cryptoProvider string   Which type you using encrypto and encryto
+      --file string             absolute filepath for a yaml you want to decrypt/encrypt
       --flags string            the sort code of the contact account
-      --file string              absolute filepath for a yaml
   -h, --help                    help for macgyver
-      --keysType string         Which input type you using for encrypto and encryto (default "text") (text, file)
+      --keysType string         Which input type you using for encrypto and encryto (e.g. text, file and env) (default "text")
       --oAuthLocation string    location of the JSON key credentials file. If empty then use the Google Application Defaults.
       --secretTag string        the prefix of secret (default "secret_tag")
 

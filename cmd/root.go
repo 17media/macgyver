@@ -61,7 +61,7 @@ func init() {
 	viper.BindPFlag("cryptoProvider", RootCmd.PersistentFlags().Lookup("cryptoProvider"))
 
 	// var keysType string
-	RootCmd.PersistentFlags().StringVar((*string)(&keysType), "keysType", "text", "Which input type you using for encrypto and encryto")
+	RootCmd.PersistentFlags().StringVar((*string)(&keysType), "keysType", "text", "Which input type you using for encrypto and encryto (e.g. text, file and env)")
 	viper.BindPFlag("keysType", RootCmd.PersistentFlags().Lookup("keysType"))
 
 	// var SecretTag string
@@ -105,7 +105,7 @@ func init() {
 	viper.BindPFlag("AWSprofileName", RootCmd.PersistentFlags().Lookup("AWSprofileName"))
 
 	// var file string
-	RootCmd.PersistentFlags().StringVar(&file, "file", "", "file want to decrypt/encrypt")
+	RootCmd.PersistentFlags().StringVar(&file, "file", "", "absolute filepath for a yaml you want to decrypt/encrypt")
 	viper.BindPFlag("file", RootCmd.PersistentFlags().Lookup("file"))
 }
 

@@ -49,11 +49,15 @@ func encrypt(cmd *cobra.Command, args []string) {
 	if err != nil {
 		log.Panic(err)
 	}
+	inputs := map[keys.Type][]string{
+		keys.TypeText: strings.Split(flags, " "),
+		keys.TypeEnv:  os.Environ(),
+	}
 
 	// use file, flags oe env
 	switch keysType {
-	case keys.TypeText:
-		keyFlags := k.Import(strings.Split(flags, " "), SecretTag)
+	case keys.TypeText, keys.TypeEnv:
+		keyFlags := k.Import(inputs[keysType], SecretTag)
 		// Encrypt all secrets that are not encrypted of each key
 		p := crypto.Providers[cryptoProvider]
 		for _, keyFlag := range keyFlags {
@@ -77,8 +81,6 @@ func encrypt(cmd *cobra.Command, args []string) {
 		if err := k.ReplaceOriginFile(file, values); err != nil {
 			log.Panic(err)
 		}
-	case keys.TypeEnv:
-		log.Panic("env type is not ready")
 	default:
 		log.Panicf("keysType does not support %s", keysType)
 	}

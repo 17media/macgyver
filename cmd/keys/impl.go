@@ -1,14 +1,16 @@
 package keys
 
 import (
-	"encoding/json"
 	"fmt"
 	"gopkg.in/yaml.v3"
 	"io"
 	"io/ioutil"
 	"log"
+	"os"
 	"regexp"
 	"strings"
+
+	"github.com/17media/macgyver/cmd/crypto"
 )
 
 var (
@@ -41,6 +43,24 @@ func (e *envsKeys) Import(input []string, secretTag string) []Key {
 	return ks
 }
 
+func (e *envsKeys) Encrypt(input string, secretTag string, cp crypto.Crypto) map[string]interface{} {
+	// Currently, it's only for file type Key
+	log.Panic("not implement")
+	return map[string]interface{}{}
+}
+
+func (e *envsKeys) Decrypt(input string, secretTag string, cp crypto.Crypto) map[string]interface{} {
+	// Currently, it's only for file type Key
+	log.Panic("not implement")
+	return map[string]interface{}{}
+}
+
+func (e *envsKeys) ReplaceOriginFile(input string, values map[string]interface{}) error {
+	// Currently, it's only for file type Key
+	log.Panic("not implement")
+	return nil
+}
+
 func (e *envsKeys) Export(keys []Key, secretTag string, writeCloser io.WriteCloser) error {
 	exportStrs := ""
 	reSecret := getSecretRegexp(secretTag)
@@ -55,6 +75,24 @@ func (e *envsKeys) Export(keys []Key, secretTag string, writeCloser io.WriteClos
 }
 
 type flagsKeys struct {
+}
+
+func (f *flagsKeys) Encrypt(input string, secretTag string, cp crypto.Crypto) map[string]interface{} {
+	// Currently, it's only for file type Key
+	log.Panic("not implement")
+	return map[string]interface{}{}
+}
+
+func (f *flagsKeys) Decrypt(input string, secretTag string, cp crypto.Crypto) map[string]interface{} {
+	// Currently, it's only for file type Key
+	log.Panic("not implement")
+	return map[string]interface{}{}
+}
+
+func (f *flagsKeys) ReplaceOriginFile(input string, values map[string]interface{}) error {
+	// Currently, it's only for file type Key
+	log.Panic("not implement")
+	return nil
 }
 
 func (f *flagsKeys) Import(input []string, secretTag string) []Key {
@@ -89,64 +127,90 @@ func (f *flagsKeys) Export(keys []Key, secretTag string, writeCloser io.WriteClo
 	return writeCloser.Close()
 }
 
-func parseYaml(i interface{}) interface{} {
-	switch x := i.(type) {
-	case map[interface{}]interface{}:
-		m2 := map[string]interface{}{}
-		for k, v := range x {
-			m2[k.(string)] = parseYaml(v)
-		}
-		return m2
-	case []interface{}:
-		for i, v := range x {
-			x[i] = parseYaml(v)
-		}
-	}
-	return i
-}
-
-func convertYamlToMap(data []byte) map[string]interface{} {
-	var body interface{}
-	if err := yaml.Unmarshal(data, &body); err != nil {
-		panic(err)
-	}
-	body = parseYaml(body)
-	// Test parse to JSON
-	if _, err := json.Marshal(body); err != nil {
-		panic(err)
-	}
-	return body.(map[string]interface{})
-}
-
 type fileKeys struct {
 }
 
-func (f *fileKeys) Import(input []string, secretTag string) []Key {
-	var ks []Key
-	reSecret := getSecretRegexp(secretTag)
-	rawData, err := ioutil.ReadFile(input[0])
+func (f *fileKeys) eval(input string, function func(s string) (interface{}, error)) map[string]interface{} {
+	rawData, err := ioutil.ReadFile(input)
 	if err != nil {
 		log.Panicf("ReadFile failed %s", err)
 	}
 	data := convertYamlToMap(rawData)
-	for key, value := range data {
-		switch v := value.(type) {
-		case string:
-			ks = append(ks, Key{
-				Key:     key,
-				Value:   v,
-				Secrets: reSecret.parseValueToSecrets(v),
-			})
-		case map[interface{}]interface{}:
 
-		case []interface{}:
-
-		default:
-
-		}
+	tmp, err := operationInMap(data, function)
+	if err != nil {
+		log.Panicf("convertToKeys failed %s", err)
 	}
-	fmt.Println(ks)
-	return ks
+	return tmp.(map[string]interface{})
+}
+
+func (f *fileKeys) Encrypt(input string, secretTag string, cp crypto.Crypto) map[string]interface{} {
+	reSecret := getSecretRegexp(secretTag)
+	stringEncrypt := func(s string) (interface{}, error) {
+		value := Key{
+			Value:   s,
+			Secrets: reSecret.parseValueToSecrets(s),
+		}
+		for _, s := range value.Secrets {
+			if s.IsEncrypted {
+				continue
+			}
+			encryptText, err := cp.Encrypt([]byte(s.Text))
+			if err != nil {
+				log.Panic(err)
+			}
+			s.Text = string(encryptText)
+			s.IsEncrypted = true
+		}
+		return reSecret.replaceSecrets(value.Value, value.Secrets), nil
+	}
+
+	return f.eval(input, stringEncrypt)
+}
+
+func (f *fileKeys) Decrypt(input string, secretTag string, cp crypto.Crypto) map[string]interface{} {
+	reSecret := getSecretRegexp(secretTag)
+	stringEncrypt := func(s string) (interface{}, error) {
+		value := Key{
+			Value:   s,
+			Secrets: reSecret.parseValueToSecrets(s),
+		}
+		for _, s := range value.Secrets {
+			if !s.IsEncrypted {
+				continue
+			}
+			encryptText, err := cp.Decrypt([]byte(s.Text))
+			if err != nil {
+				log.Panic(err)
+			}
+			s.Text = string(encryptText)
+			s.IsEncrypted = false
+		}
+		return reSecret.replaceSecrets(value.Value, value.Secrets), nil
+	}
+	return f.eval(input, stringEncrypt)
+}
+
+func (f *fileKeys) ReplaceOriginFile(input string, values map[string]interface{}) error {
+	yamlData, err := yaml.Marshal(&values)
+	if err != nil {
+		log.Panicf("Marshal yaml failed %s", err)
+	}
+	file, err := os.OpenFile(input, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0755)
+	defer file.Close()
+	if err != nil {
+		log.Panic(err)
+	}
+	if _, err := file.Write(yamlData); err != nil {
+		log.Panic(err)
+	}
+	return nil
+}
+
+func (f *fileKeys) Import(input []string, secretTag string) []Key {
+	// It's for flag and env type
+	log.Panic("Not implement")
+	return []Key{}
 }
 
 func (f *fileKeys) Export(keys []Key, secretTag string, writeCloser io.WriteCloser) error {

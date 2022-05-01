@@ -27,5 +27,9 @@ func (im *base64) Decrypt(encryptText []byte) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
+	// To remove base64 padding 0
+	for decoded[len(decoded)-1] == 0 {
+		decoded = decoded[:len(decoded)-1]
+	}
 	return decoded, nil
 }

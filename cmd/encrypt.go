@@ -72,7 +72,11 @@ func encrypt(cmd *cobra.Command, args []string) {
 		// Convert decrypted keys back to string
 		k.Export(keyFlags, SecretTag, os.Stdout)
 	case keys.TypeFile:
-		log.Panic("file type is not ready")
+		p := crypto.Providers[cryptoProvider]
+		values := k.Encrypt(file, SecretTag, p)
+		if err := k.ReplaceOriginFile(file, values); err != nil {
+			log.Panic(err)
+		}
 	case keys.TypeEnv:
 		log.Panic("env type is not ready")
 	default:

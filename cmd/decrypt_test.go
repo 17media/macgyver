@@ -32,7 +32,7 @@ func (s *decryptTestSuite) TestDecrypt() {
 		decrypt(encryptCmd, []string{})
 		_ = fakeStdout.Close()
 		newOutBytes, _ := ioutil.ReadAll(r)
-		s.Equal([]byte("-test=test\x00\x00\n"), newOutBytes)
+		s.Equal([]byte("-test=test\n"), newOutBytes)
 	})
 }
 

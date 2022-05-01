@@ -2,13 +2,14 @@ package keys
 
 import (
 	"fmt"
-	"gopkg.in/yaml.v3"
 	"io"
 	"io/ioutil"
 	"log"
 	"os"
 	"regexp"
 	"strings"
+
+	"gopkg.in/yaml.v3"
 
 	"github.com/17media/macgyver/cmd/crypto"
 )

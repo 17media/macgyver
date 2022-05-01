@@ -32,7 +32,7 @@ Available Commands:
 
 Flags:
       --AWScryptoKeyID string   the cryptoKeyID of AWS
-      --AWSlocationID string    the cryptoKeyID of AWS
+      --AWSlocationID string    the locationID of AWS
       --AWSprofileName string   the profile name used for AWS authentication
       --GCPcryptoKeyID string   the cryptoKeyID of GCP
       --GCPkeyRingID string     the keyRingID of GCP

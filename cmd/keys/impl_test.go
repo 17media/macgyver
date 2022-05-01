@@ -2,12 +2,13 @@ package keys
 
 import (
 	"bytes"
-	"github.com/17media/macgyver/cmd/crypto"
 	"io"
 	"io/ioutil"
 	"testing"
 
 	"github.com/stretchr/testify/suite"
+
+	"github.com/17media/macgyver/cmd/crypto"
 )
 
 type keysTestSuite struct {

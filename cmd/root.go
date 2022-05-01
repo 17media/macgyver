@@ -93,7 +93,7 @@ func init() {
 	viper.BindPFlag("GCPcryptoKeyID", RootCmd.PersistentFlags().Lookup("GCPcryptoKeyID"))
 
 	// var AWSlocationID string
-	RootCmd.PersistentFlags().StringVar(&AWSlocationID, "AWSlocationID", "", "the cryptoKeyID of AWS")
+	RootCmd.PersistentFlags().StringVar(&AWSlocationID, "AWSlocationID", "", "the locationID of AWS")
 	viper.BindPFlag("AWSlocationID", RootCmd.PersistentFlags().Lookup("AWSlocationID"))
 
 	// var AWScryptoKeyID string

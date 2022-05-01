@@ -42,19 +42,20 @@ func init() {
 
 func decrypt(cmd *cobra.Command, args []string) {
 	crypto.Init(cryptoProvider)
-	k, err := keys.Get(keysType)
-	if err != nil {
-		log.Panic(err)
-	}
 	inputs := map[keys.Type][]string{
 		keys.TypeText: strings.Split(flags, " "),
 		keys.TypeEnv:  os.Environ(),
+	}
+	k, err := keys.Get(keysType)
+	if err != nil {
+		log.Panic(err)
 	}
 
 	// use file, flags or nev
 	switch keysType {
 	case keys.TypeText, keys.TypeEnv:
 		keyFlags := k.Import(inputs[keysType], SecretTag)
+
 		// Decrypt all secrets that are encrypted of each key
 		p := crypto.Providers[cryptoProvider]
 		for _, keyFlag := range keyFlags {

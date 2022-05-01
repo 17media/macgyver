@@ -2,8 +2,9 @@ package keys
 
 import (
 	"fmt"
-	"github.com/17media/macgyver/cmd/crypto"
 	"io"
+
+	"github.com/17media/macgyver/cmd/crypto"
 )
 
 // Type of the Keys implemented Keys

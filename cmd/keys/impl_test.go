@@ -3,9 +3,12 @@ package keys
 import (
 	"bytes"
 	"io"
+	"io/ioutil"
 	"testing"
 
 	"github.com/stretchr/testify/suite"
+
+	"github.com/17media/macgyver/cmd/crypto"
 )
 
 type keysTestSuite struct {
@@ -313,6 +316,210 @@ func (s *keysTestSuite) TestSecretRegexp() {
 		secrets := re.parseValueToSecrets(t.value)
 		s.Equal(t.expSecrets, secrets, "check parsed secrets", t.desc)
 		s.Equal(t.expNewValue, re.replaceSecrets(t.value, secrets), "check new value", t.desc)
+	}
+}
+
+func (s *keysTestSuite) TestFileKeysEncrypt() {
+	tests := []struct {
+		desc      string
+		input     []byte
+		metadata  map[string]interface{}
+		secretTag string
+		expOutput []byte
+	}{
+		{
+			desc: "test single",
+			input: []byte(`test: aa
+`),
+			metadata: map[string]interface{}{
+				"test": "<SECRET_TAG>YWE=</SECRET_TAG>",
+			},
+			secretTag: "secret_tag",
+			expOutput: []byte(
+				`test: <SECRET_TAG>YWE=</SECRET_TAG>
+`,
+			),
+		},
+		{
+			desc: "test nested struct and multi secrets",
+			input: []byte(
+				`test: 1
+test2:
+   abc: "aa "
+   c: true
+   d: 3.222
+   def: mongo://plaintext_userName:ciphertext_password@1.2.3.4:8080/production
+   test3:
+       e:
+           - aaa/
+           - 232
+           - 'dcsc: s'
+       f: asc
+       t: acc
+`,
+			),
+			metadata: map[string]interface{}{
+				"test": 1,
+				"test2": map[string]interface{}{
+					"abc": "<SECRET_TAG>YWEg</SECRET_TAG>",
+					"c":   true,
+					"d":   3.222,
+					"def": "<SECRET_TAG>bW9uZ286Ly9wbGFpbnRleHRfdXNlck5hbWU6Y2lwaGVydGV4dF9wYXNzd29yZEAxLjIuMy40OjgwODAvcHJvZHVjdGlvbg==</SECRET_TAG>",
+					"test3": map[string]interface{}{
+						"e": []interface{}{
+							"<SECRET_TAG>YWFhLw==</SECRET_TAG>",
+							232,
+							"<SECRET_TAG>ZGNzYzogcw==</SECRET_TAG>",
+						},
+						"f": "<SECRET_TAG>YXNj</SECRET_TAG>",
+						"t": "<SECRET_TAG>YWNj</SECRET_TAG>",
+					},
+				},
+			},
+			secretTag: "secret_tag",
+			expOutput: []byte(
+				`test: 1
+test2:
+    abc: <SECRET_TAG>YWEg</SECRET_TAG>
+    c: true
+    d: 3.222
+    def: <SECRET_TAG>bW9uZ286Ly9wbGFpbnRleHRfdXNlck5hbWU6Y2lwaGVydGV4dF9wYXNzd29yZEAxLjIuMy40OjgwODAvcHJvZHVjdGlvbg==</SECRET_TAG>
+    test3:
+        e:
+            - <SECRET_TAG>YWFhLw==</SECRET_TAG>
+            - 232
+            - <SECRET_TAG>ZGNzYzogcw==</SECRET_TAG>
+        f: <SECRET_TAG>YXNj</SECRET_TAG>
+        t: <SECRET_TAG>YWNj</SECRET_TAG>
+`,
+			),
+		},
+	}
+
+	fileKeys, err := Get(TypeFile)
+	crypto.Init("base64")
+	cp := crypto.Providers["base64"]
+	s.NoError(err)
+	for _, t := range tests {
+		s.Run(t.desc, func() {
+			fileName, err := RandomCreateFile(t.input)
+			s.NoError(err)
+
+			meta := fileKeys.Encrypt(fileName, t.secretTag, cp)
+			s.Equal(t.metadata, meta)
+
+			err = fileKeys.ReplaceOriginFile(fileName, meta)
+			s.NoError(err)
+
+			actOutput, err := ioutil.ReadFile(fileName)
+			s.NoError(err)
+			s.Equal(t.expOutput, actOutput)
+
+			err = RemoveFile(fileName)
+			s.NoError(err)
+		})
+	}
+}
+
+func (s *keysTestSuite) TestFileKeysDecrypt() {
+	tests := []struct {
+		desc      string
+		input     []byte
+		metadata  map[string]interface{}
+		secretTag string
+		expOutput []byte
+	}{
+		{
+			desc: "test single",
+			input: []byte(`test: <SECRET_TAG>YWEg</SECRET_TAG>
+`),
+			metadata: map[string]interface{}{
+				"test": "aa ",
+			},
+			secretTag: "secret_tag",
+			expOutput: []byte(
+				`test: 'aa '
+`,
+			),
+		},
+		{
+			desc: "test nested struct and multi secrets",
+			input: []byte(
+				`test: 1
+test2:
+   abc: <SECRET_TAG>YWE=</SECRET_TAG>
+   c: true
+   d: 3.222
+   def: <SECRET_TAG>bW9uZ286Ly9wbGFpbnRleHRfdXNlck5hbWU6Y2lwaGVydGV4dF9wYXNzd29yZEAxLjIuMy40OjgwODAvcHJvZHVjdGlvbg==</SECRET_TAG>
+   test3:
+       e:
+           - <SECRET_TAG>YWFhLw==</SECRET_TAG>
+           - 232
+           - <SECRET_TAG>ZGNzYzogcw==</SECRET_TAG>
+       f: <SECRET_TAG>YXNj</SECRET_TAG>
+       t: <SECRET_TAG>YWNj</SECRET_TAG>
+`,
+			),
+			metadata: map[string]interface{}{
+				"test": 1,
+				"test2": map[string]interface{}{
+					"abc": "aa",
+					"c":   true,
+					"d":   3.222,
+					"def": "mongo://plaintext_userName:ciphertext_password@1.2.3.4:8080/production",
+					"test3": map[string]interface{}{
+						"e": []interface{}{
+							"aaa/",
+							232,
+							"dcsc: s",
+						},
+						"f": "asc",
+						"t": "acc",
+					},
+				},
+			},
+			secretTag: "secret_tag",
+			expOutput: []byte(
+				`test: 1
+test2:
+    abc: aa
+    c: true
+    d: 3.222
+    def: mongo://plaintext_userName:ciphertext_password@1.2.3.4:8080/production
+    test3:
+        e:
+            - aaa/
+            - 232
+            - 'dcsc: s'
+        f: asc
+        t: acc
+`,
+			),
+		},
+	}
+
+	fileKeys, err := Get(TypeFile)
+	crypto.Init("base64")
+	cp := crypto.Providers["base64"]
+	s.NoError(err)
+	for _, t := range tests {
+		s.Run(t.desc, func() {
+			fileName, err := RandomCreateFile(t.input)
+			s.NoError(err)
+
+			meta := fileKeys.Decrypt(fileName, t.secretTag, cp)
+			s.Equal(t.metadata, meta)
+
+			err = fileKeys.ReplaceOriginFile(fileName, meta)
+			s.NoError(err)
+
+			actOutput, err := ioutil.ReadFile(fileName)
+			s.NoError(err)
+			s.Equal(t.expOutput, actOutput)
+
+			err = RemoveFile(fileName)
+			s.NoError(err)
+		})
 	}
 }
 

@@ -50,24 +50,36 @@ func decrypt(cmd *cobra.Command, args []string) {
 	if err != nil {
 		log.Panic(err)
 	}
-	keyFlags := k.Import(inputs[keysType], SecretTag)
 
-	// Decrypt all secrets that are encrypted of each key
-	p := crypto.Providers[cryptoProvider]
-	for _, keyFlag := range keyFlags {
-		for _, s := range keyFlag.Secrets {
-			if !s.IsEncrypted {
-				continue
+	// use file, flags or nev
+	switch keysType {
+	case keys.TypeText, keys.TypeEnv:
+		keyFlags := k.Import(inputs[keysType], SecretTag)
+
+		// Decrypt all secrets that are encrypted of each key
+		p := crypto.Providers[cryptoProvider]
+		for _, keyFlag := range keyFlags {
+			for _, s := range keyFlag.Secrets {
+				if !s.IsEncrypted {
+					continue
+				}
+				decryptText, err := p.Decrypt([]byte(s.Text))
+				if err != nil {
+					log.Panic(err)
+				}
+				s.Text = string(decryptText)
+				s.IsEncrypted = false
 			}
-			decryptText, err := p.Decrypt([]byte(s.Text))
-			if err != nil {
-				log.Panic(err)
-			}
-			s.Text = string(decryptText)
-			s.IsEncrypted = false
 		}
+		// Convert decrypted keys back to string
+		k.Export(keyFlags, SecretTag, os.Stdout)
+	case keys.TypeFile:
+		p := crypto.Providers[cryptoProvider]
+		values := k.Decrypt(file, SecretTag, p)
+		if err := k.ReplaceOriginFile(file, values); err != nil {
+			log.Panic(err)
+		}
+	default:
+		log.Panicf("keysType does not support %s", keysType)
 	}
-
-	// Convert decrypted keys back to string
-	k.Export(keyFlags, SecretTag, os.Stdout)
 }

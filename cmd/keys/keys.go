@@ -3,6 +3,8 @@ package keys
 import (
 	"fmt"
 	"io"
+
+	"github.com/17media/macgyver/cmd/crypto"
 )
 
 // Type of the Keys implemented Keys
@@ -11,6 +13,7 @@ type Type string
 const (
 	TypeText Type = "text"
 	TypeEnv       = "env"
+	TypeFile      = "file"
 )
 
 // Get returns the Keys of a Type is exists
@@ -37,6 +40,8 @@ type Secret struct {
 
 // Keys defines keys operations
 type Keys interface {
+	// Import and Export are function for old env and flag keys
+
 	// Import parses the input into keys, the secrets of keys are parsed by secretTag.
 	// The regexp pattern of secrets is `<%s>(.*?)</%s>|<%s>(.*?)</%s>`. Only one group might be captured.
 	// If no secretTag is captured, the entire value of the key will be regarded as a plaintext secret. (i.e. Secret{Text:"Value of the Key", IsEncrypted: false})
@@ -52,4 +57,19 @@ type Keys interface {
 	// If `secret.IsEncrypted` is false, the secret will be the `secret.Text` only.
 	// If `secret.IsEncrypted` is true, the secret will be the <secretTag>secret.Text</secretTag>.
 	Export(keys []Key, secretTag string, writeCloser io.WriteCloser) error
+
+	// Encrypt Decrypt and ReplaceOrignalFile are for file type key
+	// Encrypt and Decrypt parses the target file into map struct and decrypt/encrypt directly
+	// Because there will be nested data in file type while we use JSON/YAML, it's wasteful to use original way (Import to []Key then decrypt/encrypt) to encrypt/decrypt.
+	// It will use DFS to find out string to do the target function, so we prevent it to run it twice.
+	// inputs:
+	//     input: filePath
+	//     secretTag: secretTag
+	//     cp: crypto Provider instance
+	// outputs:
+	//     file data in map struct after encrypt/decrypt
+	Encrypt(input string, secretTag string, cp crypto.Crypto) map[string]interface{}
+	Decrypt(input string, secretTag string, cp crypto.Crypto) map[string]interface{}
+
+	ReplaceOriginFile(input string, values map[string]interface{}) error
 }

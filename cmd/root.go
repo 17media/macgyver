@@ -15,6 +15,7 @@ var (
 	cryptoProvider string
 	oAuthLocation  string
 	flags          string
+	file           string
 	keysType       keys.Type
 	SecretTag      string
 	GCPprojectID   string
@@ -60,7 +61,7 @@ func init() {
 	viper.BindPFlag("cryptoProvider", RootCmd.PersistentFlags().Lookup("cryptoProvider"))
 
 	// var keysType string
-	RootCmd.PersistentFlags().StringVar((*string)(&keysType), "keysType", "text", "Which input type you using for encrypto and encryto")
+	RootCmd.PersistentFlags().StringVar((*string)(&keysType), "keysType", "text", "Which input type you using for encrypto and encryto (e.g. text, file and env)")
 	viper.BindPFlag("keysType", RootCmd.PersistentFlags().Lookup("keysType"))
 
 	// var SecretTag string
@@ -92,7 +93,7 @@ func init() {
 	viper.BindPFlag("GCPcryptoKeyID", RootCmd.PersistentFlags().Lookup("GCPcryptoKeyID"))
 
 	// var AWSlocationID string
-	RootCmd.PersistentFlags().StringVar(&AWSlocationID, "AWSlocationID", "", "the cryptoKeyID of AWS")
+	RootCmd.PersistentFlags().StringVar(&AWSlocationID, "AWSlocationID", "", "the locationID of AWS")
 	viper.BindPFlag("AWSlocationID", RootCmd.PersistentFlags().Lookup("AWSlocationID"))
 
 	// var AWScryptoKeyID string
@@ -102,6 +103,10 @@ func init() {
 	// var AWSprofileName string
 	RootCmd.PersistentFlags().StringVar(&AWSprofileName, "AWSprofileName", "", "the profile name used for AWS authentication")
 	viper.BindPFlag("AWSprofileName", RootCmd.PersistentFlags().Lookup("AWSprofileName"))
+
+	// var file string
+	RootCmd.PersistentFlags().StringVar(&file, "file", "", "absolute filepath for a yaml you want to decrypt/encrypt")
+	viper.BindPFlag("file", RootCmd.PersistentFlags().Lookup("file"))
 }
 
 // initConfig reads in config file and ENV variables if set.

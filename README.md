@@ -40,9 +40,10 @@ Flags:
       --GCPprojectID string     the projectID of GCP
       --config string           config file (default is $HOME/.macgyver.yaml)
       --cryptoProvider string   Which type you using encrypto and encryto
+      --file string             absolute filepath for a yaml you want to decrypt/encrypt
       --flags string            the sort code of the contact account
   -h, --help                    help for macgyver
-      --keysType string         Which input type you using for encrypto and encryto (default "text")
+      --keysType string         Which input type you using for encrypto and encryto (e.g. text, file and env) (default "text")
       --oAuthLocation string    location of the JSON key credentials file. If empty then use the Google Application Defaults.
       --secretTag string        the prefix of secret (default "secret_tag")
 
@@ -331,6 +332,74 @@ Output
 10.10.10.10
 root
 password
+```
+
+---
+
+---
+
+### Using Base64 with file type (yaml)
+
+Currently, file type only support yaml file. And because of some limitation and easy usages, macgyver won't keep anchor and reference in yaml after parsing.
+
+It only supports encrypt string type item, so if you want to encrypt other types (e.g. int, float, bool) you need to quote them.
+
+
+#### Encrypt and Decrypt
+```
+
+echo "test: abc
+test2: 
+    abc: cde
+    def: 1
+    ghi: 
+        - abc
+        - true" > test2.yaml
+
+cat test2.yaml
+
+>> 
+test: abc
+test2: 
+    abc: cde
+    def: 1
+    ghi: 
+        - abc
+        - true
+
+
+
+macgyver encrypt \
+--cryptoProvider=base64 \
+--keysType=file \
+--file=test2.yaml
+
+cat test2.yaml
+>>
+test: <SECRET_TAG>YWJj</SECRET_TAG>
+test2:
+    abc: <SECRET_TAG>Y2Rl</SECRET_TAG>
+    def: 1
+    ghi:
+        - <SECRET_TAG>YWJj</SECRET_TAG>
+        - true
+
+
+macgyver decrypt \
+--cryptoProvider=base64 \
+--keysType=file \
+--file=test2.yaml
+
+>> 
+test: abc
+test2:
+    abc: cde
+    def: 1
+    ghi:
+        - abc
+        - true
+
+
 ```
 
 ---

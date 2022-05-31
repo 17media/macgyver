@@ -4,8 +4,6 @@ references:
   default: &default
     docker:
       - image: cimg/go:1.17
-  macgyver_bin_cache_key: &macgyver_bin_cache_key
-    macgyver-bin-{{ .Environment.CIRCLE_SHA1 }}
   tag_filter_release: &tag_filter_release
      filters:
        tags:

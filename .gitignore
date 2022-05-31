@@ -18,3 +18,7 @@ vendor/*
 
 # Example script
 example
+
+tmp
+.go-version
+macgyver

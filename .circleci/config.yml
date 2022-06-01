@@ -2,13 +2,8 @@ version: 2
 
 references:
   default: &default
-    working_directory: /go/src/github.com/17media/macgyver
     docker:
-      - image: circleci/golang:1.10.4
-  govendor_cache_key: &govendor_cache_key
-    govendor-{{ checksum "vendor/vendor.json" }}
-  macgyver_bin_cache_key: &macgyver_bin_cache_key
-    macgyver-bin-{{ .Environment.CIRCLE_SHA1 }}
+      - image: cimg/go:1.17
   tag_filter_release: &tag_filter_release
      filters:
        tags:
@@ -23,18 +18,19 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          name: "Restore cache: govendor"
-          key: *govendor_cache_key
+          name: "Restore cache: gomod"
+          key: go-mod-{{ checksum "go.sum" }}
       - run:
           name: "Collect Go Dependencies"
           command: |
-            go get github.com/kardianos/govendor
-            govendor sync
+            go version
+            go mod tidy
+            go mod verify
       - save_cache:
-          name: "Save cache: govendor"
-          key: *govendor_cache_key
+          name: "Save cache: gomod"
+          key: go-mod-{{ checksum "go.sum" }}
           paths:
-            - vendor
+            - "/go/pkg/mod"
       - run:
           name: "Bulid macgyver binary for x86_64"
           environment:
@@ -45,7 +41,7 @@ jobs:
             go build -o macgyver main.go
       - save_cache:
           name: "Save cache: macgyver binary"
-          key: *macgyver_bin_cache_key
+          key: macgyver-bin-{{ .Environment.CIRCLE_SHA1 }}
           paths:
             - macgyver
   release:
@@ -54,7 +50,7 @@ jobs:
       - checkout
       - restore_cache:
           name: "Restore cache: macgyver binary"
-          key: *macgyver_bin_cache_key
+          key: macgyver-bin-{{ .Environment.CIRCLE_SHA1 }}
       - run:
           name: "Compress built macgyver binary"
           command: |

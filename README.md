@@ -1,4 +1,7 @@
 # Macgyver
+
+[![CircleCI](https://circleci.com/gh/17media/macgyver/tree/master.svg?style=svg)](https://circleci.com/gh/17media/macgyver/tree/master)
+
 A tool for decrypting and encrypting strings in GCP / AWS by using key management. The tool is golang's flags friendly.
 
 ## Installation

@@ -41,7 +41,7 @@ jobs:
           name: "Save cache: macgyver binary"
           key: macgyver-bin-{{ .Environment.CIRCLE_SHA1 }}
           paths:
-            - macgyver
+            - macgyver.tar.gz
   release:
     <<: *default
     steps:

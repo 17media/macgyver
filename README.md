@@ -426,12 +426,14 @@ test2:
 
 ---
 
-## Release
+## Release in CircleCI
 
-```
+```bash
 git tag "v9.9.9"
-make release
+git push origin --tags
 ```
+
+> You still need to do the final check or edit this release manually in the GitHub (gh-cli is required)
 
 ### Todo
 - [x] Support environment variable

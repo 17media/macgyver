@@ -30,7 +30,7 @@ setup: ## install tools
 .PHONY: release
 release: ## create release package
 	@gh auth login --with-token $(GITHUB_TOKEN)
-	@tag="$(shell git tag -l --points-at HEAD)"; gh release create --tag $$tag --name $$tag --draft --prerelease macgyver.tar.gz
+	@tag="$(shell git tag -l --points-at HEAD)"; gh release create $$tag -t $$tag --draft --prerelease macgyver.tar.gz
 	
 .PHONY: clean
 clean: ## clean build files

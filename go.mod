@@ -4,11 +4,13 @@ go 1.17
 
 require (
 	github.com/aws/aws-sdk-go v1.25.27
+	github.com/google/uuid v1.3.0
 	github.com/spf13/cobra v0.0.4-0.20180722215644-7c4570c3ebeb
 	github.com/spf13/viper v1.1.0
 	github.com/stretchr/testify v1.4.1-0.20190904163530-85f2b59c4459
 	golang.org/x/oauth2 v0.0.0-20180724155351-3d292e4d0cdc
 	google.golang.org/api v0.0.0-20170622234117-1ba364a3bb61
+	gopkg.in/yaml.v3 v3.0.1
 )
 
 require (

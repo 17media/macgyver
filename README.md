@@ -426,6 +426,13 @@ test2:
 
 ---
 
+## Release
+
+```
+git tag "v9.9.9"
+make release
+```
+
 ### Todo
 - [x] Support environment variable
 - [ ] Support text file

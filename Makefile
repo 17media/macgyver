@@ -8,8 +8,8 @@ GITHUB_TOKEN ?= "wololo"
 help: ## show make targets
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {sub("\\\\n",sprintf("\n%22c"," "), $$2);printf " \033[36m%-20s\033[0m  %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 
-.PHONY: tidy
-setup: ## setup go environment
+.PHONY: install
+install: ## install go modules
 	@go version
 	@go mod tidy
 	@go mod verify
@@ -17,6 +17,7 @@ setup: ## setup go environment
 .PHONY: build
 build: ## build go binary
 	@go build -o macgyver main.go
+	@tar zcvf macgyver.tar.gz macgyver
 
 # Ubuntu Only
 .PHONY: setup
@@ -29,7 +30,6 @@ setup: ## install tools
 .PHONY: release
 release: ## create release package
 	@gh auth login --with-token $(GITHUB_TOKEN)
-	@tar zcvf macgyver.tar.gz macgyver
 	@tag="$(shell git tag -l --points-at HEAD)"; gh release create --tag $$tag --name $$tag --draft --prerelease macgyver.tar.gz
 	
 .PHONY: clean

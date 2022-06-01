@@ -23,7 +23,7 @@ jobs:
       - run:
           name: "Collect Go Dependencies"
           command: |
-            make setup
+            make install
       - save_cache:
           name: "Save cache: gomod"
           key: go-mod-{{ checksum "go.sum" }}

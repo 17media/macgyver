@@ -29,7 +29,7 @@ setup: ## install tools
 # Note: You still need to do the final check or edit this release manually in the GitHub (gh-cli is required)
 .PHONY: release
 release: ## create release package
-	@gh auth login --with-token $(GITHUB_TOKEN)
+	@echo $(GITHUB_TOKEN) | gh auth login --with-token
 	@tag="$(shell git tag -l --points-at HEAD)"; gh release create $$tag -t $$tag --draft --prerelease macgyver.tar.gz
 	
 .PHONY: clean

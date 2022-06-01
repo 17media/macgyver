@@ -52,6 +52,7 @@ jobs:
       - run:
           name: "Compress built macgyver binary"
           command: |
+            make setup
             make release
 
 workflows:

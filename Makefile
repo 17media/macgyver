@@ -1,6 +1,6 @@
 SHELL=/bin/bash
 GITROOT=$(shell git rev-parse --show-toplevel)
-GITHUB_TOKEN ?= "wololo"
+GITHUB_TOKEN ?= "SPECIFY_GITHUB_TOKEN_IN_ENVIRONMENT"
 
 .DEFAULT_GOAL := help
 

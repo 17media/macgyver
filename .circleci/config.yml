@@ -23,9 +23,7 @@ jobs:
       - run:
           name: "Collect Go Dependencies"
           command: |
-            go version
-            go mod tidy
-            go mod verify
+            make install
       - save_cache:
           name: "Save cache: gomod"
           key: go-mod-{{ checksum "go.sum" }}
@@ -38,7 +36,7 @@ jobs:
             GOOS: linux
             GOARCH: amd64
           command: |
-            go build -o macgyver main.go
+            make build
       - save_cache:
           name: "Save cache: macgyver binary"
           key: macgyver-bin-{{ .Environment.CIRCLE_SHA1 }}
@@ -54,13 +52,7 @@ jobs:
       - run:
           name: "Compress built macgyver binary"
           command: |
-            tar zcvf macgyver.tar.gz macgyver
-      - run: go get -u github.com/tcnksm/ghr
-      - run:
-          name: "Create release for macgyver"
-          command: |
-            tag=$(git tag -l --points-at HEAD)
-            ghr -t $GITHUB_TOKEN -u $CIRCLE_PROJECT_USERNAME -r $CIRCLE_PROJECT_REPONAME --replace $tag macgyver.tar.gz
+            make release
 
 workflows:
   version: 2

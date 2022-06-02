@@ -16,7 +16,7 @@ install: ## install go modules
 
 .PHONY: build
 build: ## build go binary
-	@go build -o macgyver main.go
+	@tag="$(shell git tag -l --points-at HEAD)"; go build -ldflags="-X 'main.version=$$tag'" -o macgyver main.go
 	@tar zcvf macgyver.tar.gz macgyver
 
 # Ubuntu Only

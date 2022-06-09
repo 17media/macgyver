@@ -29,6 +29,7 @@ func Get(t Type) (Keys, error) {
 type Key struct {
 	Key     string
 	Value   string
+	Hyphens int
 	Secrets []*Secret
 }
 

@@ -98,7 +98,7 @@ func (f *flagsKeys) ReplaceOriginFile(input string, values map[string]interface{
 
 func (f *flagsKeys) Import(input []string, secretTag string) []Key {
 	var ks []Key
-	flagRegexp := `^\-(\w+)=(.+)$`
+	flagRegexp := `^\-{1,2}([[:alnum:]\-_]+)=(.+)$`
 	reFlag := regexp.MustCompile(flagRegexp)
 	reSecret := getSecretRegexp(secretTag)
 	for _, flag := range input {
@@ -109,6 +109,7 @@ func (f *flagsKeys) Import(input []string, secretTag string) []Key {
 		ks = append(ks, Key{
 			Key:     key,
 			Value:   value,
+			Hyphens: strings.Count(flag[:2], "-"),
 			Secrets: reSecret.parseValueToSecrets(value),
 		})
 	}
@@ -120,7 +121,8 @@ func (f *flagsKeys) Export(keys []Key, secretTag string, writeCloser io.WriteClo
 	reSecret := getSecretRegexp(secretTag)
 	for _, k := range keys {
 		newValue := reSecret.replaceSecrets(k.Value, k.Secrets)
-		exportFlags += fmt.Sprintf(" -%s=%s", k.Key, newValue)
+		hyphens := strings.Repeat("-", k.Hyphens)
+		exportFlags += fmt.Sprintf(" %s%s=%s", hyphens, k.Key, newValue)
 	}
 	if _, err := writeCloser.Write([]byte(strings.TrimLeft(exportFlags, " ") + "\n")); err != nil {
 		return err
@@ -230,7 +232,7 @@ func (f *fileKeys) Export(keys []Key, secretTag string, writeCloser io.WriteClos
 func getKVfromInput(input string, re *regexp.Regexp) (key string, value string, err error) {
 	kv := re.FindStringSubmatch(input)
 	if len(kv) != 3 {
-		emptyRegexp := `^\-(\w+)=$`
+		emptyRegexp := `^\-{1,2}([[:alnum:]\-_]+)=$`
 		emptyFlag := regexp.MustCompile(emptyRegexp)
 		k := emptyFlag.FindStringSubmatch(input)
 		return k[1], "", fmt.Errorf(`Cannot find value for key "%s"`, k[1])

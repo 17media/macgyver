@@ -163,8 +163,9 @@ func (s *keysTestSuite) TestFlagsKeys() {
 			secretTag: "secret_tag",
 			expImportedKeys: []Key{
 				{
-					Key:   "flag1",
-					Value: "flag-AAA",
+					Key:     "flag1",
+					Value:   "flag-AAA",
+					Hyphens: 1,
 					Secrets: []*Secret{
 						{
 							Text:        "flag-AAA",
@@ -173,8 +174,9 @@ func (s *keysTestSuite) TestFlagsKeys() {
 					},
 				},
 				{
-					Key:   "flag2",
-					Value: "NotSecretPrefix<secret_tag>flag-BBB</secret_tag>NotSecretSuffix",
+					Key:     "flag2",
+					Value:   "NotSecretPrefix<secret_tag>flag-BBB</secret_tag>NotSecretSuffix",
+					Hyphens: 1,
 					Secrets: []*Secret{
 						{
 							Text:        "flag-BBB",
@@ -183,8 +185,9 @@ func (s *keysTestSuite) TestFlagsKeys() {
 					},
 				},
 				{
-					Key:   "flag3",
-					Value: "<secret_tag>flag-CCC</secret_tag>",
+					Key:     "flag3",
+					Value:   "<secret_tag>flag-CCC</secret_tag>",
+					Hyphens: 1,
 					Secrets: []*Secret{
 						{
 							Text:        "flag-CCC",
@@ -196,6 +199,63 @@ func (s *keysTestSuite) TestFlagsKeys() {
 			expExportedStr: "-flag1=flag-AAA -flag2=NotSecretPrefixflag-BBBNotSecretSuffix -flag3=flag-CCC\n",
 		},
 		{
+			desc: "test one secret plaintexts with hyphen, underscore in key and two hyphens in front",
+			input: []string{
+				"-flag1=flag-AAA",
+				"--flag-2=NotSecretPrefix<secret_tag>flag-BBB</secret_tag>NotSecretSuffix",
+				"--flag_3=<secret_tag>flag-CCC</secret_tag>",
+				"--flag_4=",
+			},
+			secretTag: "secret_tag",
+			expImportedKeys: []Key{
+				{
+					Key:     "flag1",
+					Value:   "flag-AAA",
+					Hyphens: 1,
+					Secrets: []*Secret{
+						{
+							Text:        "flag-AAA",
+							IsEncrypted: false,
+						},
+					},
+				},
+				{
+					Key:     "flag-2",
+					Value:   "NotSecretPrefix<secret_tag>flag-BBB</secret_tag>NotSecretSuffix",
+					Hyphens: 2,
+					Secrets: []*Secret{
+						{
+							Text:        "flag-BBB",
+							IsEncrypted: false,
+						},
+					},
+				},
+				{
+					Key:     "flag_3",
+					Value:   "<secret_tag>flag-CCC</secret_tag>",
+					Hyphens: 2,
+					Secrets: []*Secret{
+						{
+							Text:        "flag-CCC",
+							IsEncrypted: false,
+						},
+					},
+				},
+				{
+					Key:     "flag_4",
+					Value:   "",
+					Hyphens: 2,
+					Secrets: []*Secret{
+						{
+							Text:        "",
+							IsEncrypted: false,
+						},
+					},
+				},
+			},
+			expExportedStr: "-flag1=flag-AAA --flag-2=NotSecretPrefixflag-BBBNotSecretSuffix --flag_3=flag-CCC --flag_4=\n",
+		},
+		{
 			desc: "test one secret ciphertexts",
 			input: []string{
 				"-flag1=NotSecretPrefix<SECRET_TAG>flag-AAA</SECRET_TAG>NotSecretSuffix",
@@ -204,8 +264,9 @@ func (s *keysTestSuite) TestFlagsKeys() {
 			secretTag: "secret_tag",
 			expImportedKeys: []Key{
 				{
-					Key:   "flag1",
-					Value: "NotSecretPrefix<SECRET_TAG>flag-AAA</SECRET_TAG>NotSecretSuffix",
+					Key:     "flag1",
+					Value:   "NotSecretPrefix<SECRET_TAG>flag-AAA</SECRET_TAG>NotSecretSuffix",
+					Hyphens: 1,
 					Secrets: []*Secret{
 						{
 							Text:        "flag-AAA",
@@ -214,8 +275,9 @@ func (s *keysTestSuite) TestFlagsKeys() {
 					},
 				},
 				{
-					Key:   "flag2",
-					Value: "<SECRET_TAG>flag-BBB</SECRET_TAG>",
+					Key:     "flag2",
+					Value:   "<SECRET_TAG>flag-BBB</SECRET_TAG>",
+					Hyphens: 1,
 					Secrets: []*Secret{
 						{
 							Text:        "flag-BBB",
@@ -234,8 +296,9 @@ func (s *keysTestSuite) TestFlagsKeys() {
 			secretTag: "secret_tag",
 			expImportedKeys: []Key{
 				{
-					Key:   "mongoURI",
-					Value: "mongo://<secret_tag>plaintext_userName</secret_tag>:<SECRET_TAG>ciphertext_password</SECRET_TAG>@1.2.3.4:<secret_tag>8080</secret_tag>/production",
+					Key:     "mongoURI",
+					Value:   "mongo://<secret_tag>plaintext_userName</secret_tag>:<SECRET_TAG>ciphertext_password</SECRET_TAG>@1.2.3.4:<secret_tag>8080</secret_tag>/production",
+					Hyphens: 1,
 					Secrets: []*Secret{
 						{
 							Text:        "plaintext_userName",
